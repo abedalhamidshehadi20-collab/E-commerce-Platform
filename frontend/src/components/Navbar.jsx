@@ -7,12 +7,6 @@ import { BACKEND_BASE_URL } from "../api/apiClient";
 import { logout } from "../store/slices/authSlice";
 import { clearCartState } from "../store/slices/cartSlice";
 
-const utilityLinks = [
-  { label: "Buyer protection", to: "/contact" },
-  { label: "Help center", to: "/contact" },
-  { label: "Sell with us", to: "/contact" },
-];
-
 const publicLinks = [
   { label: "Products", to: "/products" },
   { label: "New arrivals", to: "/products?ordering=-created_at" },
@@ -51,19 +45,6 @@ export default function Navbar() {
 
   return (
     <header className="site-header">
-      <div className="header-utility-strip">
-        <div className="container header-utility-inner">
-          <p>Free shipping on orders over $49</p>
-          <div className="header-utility-links">
-            {utilityLinks.map((link) => (
-              <Link key={link.label} to={link.to}>
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </div>
-
       <div className="container header-main-row">
         <Link className="brand-mark" to="/">
           <span className="brand-badge">A-SH</span>
