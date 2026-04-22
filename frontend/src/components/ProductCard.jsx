@@ -5,6 +5,15 @@ import Button from "./Button";
 import { addItemToCart } from "../store/slices/cartSlice";
 import { formatCurrency } from "../utils/formatters";
 
+function getPlaceholderLabel(name = "Catalog") {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
 export default function ProductCard({ product }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -30,29 +39,40 @@ export default function ProductCard({ product }) {
         {product.primary_image ? (
           <img src={product.primary_image} alt={product.name} />
         ) : (
-          <div className="product-card-placeholder">No image</div>
+          <div className="product-card-placeholder">{getPlaceholderLabel(product.name)}</div>
         )}
       </Link>
+
       <div className="product-card-body">
         <div className="product-card-meta">
-          <span>{product.category_name}</span>
-          {product.stock > 0 ? <span>In stock</span> : <span>Sold out</span>}
+          <span>{product.category_name || "Catalog"}</span>
+          <span className={`product-card-stock ${product.stock > 0 ? "in-stock" : "sold-out"}`}>
+            {product.stock > 0 ? "Ready to ship" : "Sold out"}
+          </span>
         </div>
+
         <Link to={`/products/${product.id}`} className="product-card-title">
           {product.name}
         </Link>
+
         <p className="product-card-description">
-          {product.short_description || "Designed for everyday performance and modern living."}
+          {product.short_description || "Structured product details and a faster way to buy."}
         </p>
+
         <div className="product-card-footer">
-          <strong>{formatCurrency(product.price)}</strong>
+          <div className="product-card-price-stack">
+            <strong>{formatCurrency(product.price)}</strong>
+            <span>{product.stock > 0 ? `${product.stock} in stock` : "Unavailable"}</span>
+          </div>
+
           <Button
             variant="secondary"
+            className="product-card-button"
             onClick={handleQuickAdd}
             loading={updating}
             disabled={product.stock <= 0}
           >
-            Add to cart
+            Add
           </Button>
         </div>
       </div>
