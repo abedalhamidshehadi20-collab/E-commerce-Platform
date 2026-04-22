@@ -174,7 +174,7 @@ button {
   font-weight: 800;
 }
 
-.brand-mark span {
+.brand-copy span {
   display: block;
   color: var(--muted);
   font-size: 0.85rem;
@@ -1368,18 +1368,22 @@ body {
 }
 
 .brand-badge {
-  min-width: 34px;
-  height: 34px;
-  padding: 0 0.4rem;
-  display: grid;
-  place-items: center;
-  border-radius: 7px;
-  background: linear-gradient(135deg, #4f80ff 0%, #2f62f4 100%);
-  color: #ffffff;
-  font-size: 0.66rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  box-shadow: 0 8px 18px rgba(47, 98, 244, 0.24);
+  min-width: 52px;
+  height: 36px;
+  padding: 0 0.55rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  background:
+    radial-gradient(circle at 26% 18%, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0) 48%),
+    linear-gradient(135deg, #5f8dff 0%, #2f62f4 60%, #274fca 100%);
+  color: #f6f9ff;
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 10px 20px rgba(47, 98, 244, 0.24);
 }
 
 .brand-copy {
