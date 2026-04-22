@@ -1368,15 +1368,17 @@ body {
 }
 
 .brand-badge {
-  width: 34px;
+  min-width: 34px;
   height: 34px;
+  padding: 0 0.4rem;
   display: grid;
   place-items: center;
   border-radius: 7px;
   background: linear-gradient(135deg, #4f80ff 0%, #2f62f4 100%);
   color: #ffffff;
-  font-size: 1rem;
+  font-size: 0.66rem;
   font-weight: 800;
+  letter-spacing: 0.04em;
   box-shadow: 0 8px 18px rgba(47, 98, 244, 0.24);
 }
 

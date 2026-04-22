@@ -66,9 +66,9 @@ export default function Navbar() {
 
       <div className="container header-main-row">
         <Link className="brand-mark" to="/">
-          <span className="brand-badge">B</span>
+          <span className="brand-badge">A-SH</span>
           <div className="brand-copy">
-            <strong>Brandname</strong>
+            <strong>A-SH Store</strong>
             <span>Global wholesale store</span>
           </div>
         </Link>

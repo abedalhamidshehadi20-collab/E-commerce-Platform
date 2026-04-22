@@ -57,7 +57,7 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom-row">
-          <p>Copyright 2026 Brandname. All rights reserved.</p>
+          <p>Copyright 2026 A-SH Store. All rights reserved.</p>
           <p>Language: English</p>
         </div>
       </div>
