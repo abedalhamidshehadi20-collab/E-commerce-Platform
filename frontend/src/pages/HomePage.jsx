@@ -264,7 +264,31 @@ export default function HomePage() {
                     Explore a dense marketplace layout with new arrivals, practical
                     filters, and quick jumps into the full catalog.
                   </p>
-                  <Button onClick={() => navigate("/products")}>Learn more</Button>
+                  <div className="hero-cta-row">
+                    <Button className="hero-cta-button" onClick={() => navigate("/products")}>
+                      Explore catalog
+                    </Button>
+                    <Link
+                      className="hero-inline-link"
+                      to={heroProduct ? `/products/${heroProduct.id}` : "/products"}
+                    >
+                      View featured item
+                    </Link>
+                  </div>
+                  <div className="hero-metrics" aria-label="Storefront overview">
+                    <div className="hero-metric-item">
+                      <strong>{categories.length || 0}</strong>
+                      <span>Categories</span>
+                    </div>
+                    <div className="hero-metric-item">
+                      <strong>{combinedProducts.length || 0}</strong>
+                      <span>Live products</span>
+                    </div>
+                    <div className="hero-metric-item">
+                      <strong>24/7</strong>
+                      <span>Secure checkout</span>
+                    </div>
+                  </div>
                 </div>
                 <Link
                   className="hero-banner-media"
