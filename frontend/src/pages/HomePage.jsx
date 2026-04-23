@@ -213,9 +213,11 @@ export default function HomePage() {
         <div className="market-layout-top">
           <aside className="market-sidebar">
             <div className="market-panel department-panel">
-              <div className="panel-title-row">
+              <div className="panel-title-row department-title-row">
                 <h2>Browse categories</h2>
+                <span className="department-title-meta">Top picks</span>
               </div>
+              <p className="department-intro">Shop by department and compare inventory quickly.</p>
               <div className="department-list">
                 {sidebarCategories.map((category) => (
                   <Link
@@ -223,7 +225,7 @@ export default function HomePage() {
                     className="department-link"
                     to={`/products?category=${category.id}`}
                   >
-                    <span>{category.name}</span>
+                    <span className="department-link-name">{category.name}</span>
                     <small>{category.product_count || 0} items</small>
                   </Link>
                 ))}
