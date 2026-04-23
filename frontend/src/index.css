@@ -1980,21 +1980,30 @@ body {
   border: 1px solid #cfdeee;
   background: linear-gradient(180deg, #f4f7fb 0%, #edf2f8 100%);
   box-shadow: 0 14px 22px rgba(15, 33, 54, 0.18);
-  height: clamp(210px, 24vw, 270px);
+  height: clamp(220px, 25vw, 288px);
+}
+
+.hero-media-visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(241, 246, 252, 0.92) 0%, rgba(241, 246, 252, 0) 38%);
+  pointer-events: none;
 }
 
 .hero-media-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 95%;
+  object-position: center 100%;
   display: block;
-  transform: scale(1.02);
+  transform-origin: 50% 88%;
+  transform: scale(1.24);
   transition: transform 0.25s ease;
 }
 
 .hero-banner-media:hover .hero-media-image {
-  transform: scale(1.06);
+  transform: scale(1.29);
 }
 
 .hero-media-placeholder {
@@ -2876,7 +2885,7 @@ body {
   }
 
   .hero-media-visual {
-    height: clamp(190px, 52vw, 240px);
+    height: clamp(198px, 54vw, 250px);
   }
 
   .hero-cta-row {
