@@ -294,11 +294,21 @@ export default function HomePage() {
                   className="hero-banner-media"
                   to={heroProduct ? `/products/${heroProduct.id}` : "/products"}
                 >
-                  {heroProduct?.primary_image ? (
-                    <img src={heroProduct.primary_image} alt={heroProduct.name} />
-                  ) : (
-                    <div className="hero-image-placeholder">Catalog</div>
-                  )}
+                  <div className="hero-media-frame">
+                    <div className="hero-media-meta">
+                      <span>Featured pick</span>
+                      <strong>{heroProduct?.name || "Catalog spotlight"}</strong>
+                    </div>
+                    {heroProduct?.primary_image ? (
+                      <img
+                        className="hero-media-image"
+                        src={heroProduct.primary_image}
+                        alt={heroProduct.name}
+                      />
+                    ) : (
+                      <div className="hero-media-placeholder">Catalog</div>
+                    )}
+                  </div>
                 </Link>
               </div>
 
