@@ -213,19 +213,21 @@ export default function ProfilePage() {
               }
             />
           </div>
-          <label className="checkbox-field">
-            <input
-              type="checkbox"
-              checked={addressForm.is_default}
-              onChange={(event) =>
-                setAddressForm((current) => ({ ...current, is_default: event.target.checked }))
-              }
-            />
-            <span>Set as default</span>
-          </label>
-          <Button type="submit" loading={addressesLoading}>
-            Save address
-          </Button>
+          <div className="profile-form-actions">
+            <label className="checkbox-field">
+              <input
+                type="checkbox"
+                checked={addressForm.is_default}
+                onChange={(event) =>
+                  setAddressForm((current) => ({ ...current, is_default: event.target.checked }))
+                }
+              />
+              <span>Set as default</span>
+            </label>
+            <Button type="submit" loading={addressesLoading}>
+              Save address
+            </Button>
+          </div>
         </form>
       </div>
 

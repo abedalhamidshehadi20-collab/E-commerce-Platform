@@ -882,6 +882,17 @@ button {
   height: 18px;
 }
 
+.profile-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 0.2rem;
+}
+
+.profile-form-actions .checkbox-field {
+  margin: 0;
+}
+
 .auth-card {
   max-width: 680px;
   margin: 0 auto;
