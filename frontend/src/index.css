@@ -1945,14 +1945,12 @@ body {
 }
 
 .hero-media-details {
-  position: absolute;
-  top: 0.8rem;
-  left: 0.8rem;
-  right: 0.8rem;
+  position: relative;
   z-index: 2;
   display: grid;
   gap: 0.15rem;
   padding: 0.62rem 0.72rem;
+  width: 100%;
   border-radius: 10px;
   border: 1px solid rgba(140, 169, 205, 0.48);
   background: rgba(255, 255, 255, 0.8);
@@ -1986,12 +1984,14 @@ body {
   position: relative;
   z-index: 1;
   width: 100%;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.7rem;
   overflow: hidden;
   border-radius: 14px;
-  padding: 4.3rem 0.7rem 0.7rem;
+  padding: 0.7rem;
   background:
     radial-gradient(circle at 72% 24%, rgba(134, 175, 226, 0.4), transparent 45%),
     linear-gradient(180deg, rgba(248, 252, 255, 0.98), rgba(230, 240, 250, 0.92));
@@ -2022,28 +2022,31 @@ body {
 .hero-media-stage img {
   position: relative;
   z-index: 1;
-  width: min(100%, 16.5rem);
-  max-height: 100%;
-  object-fit: contain;
-  object-position: center bottom;
-  transform: translateY(2px);
+  width: 100%;
+  height: 100%;
+  min-height: 176px;
+  border-radius: 11px;
+  object-fit: cover;
+  object-position: center 68%;
+  transform: scale(1.01);
   filter: drop-shadow(0 18px 24px rgba(15, 34, 56, 0.3));
   transition: transform 0.25s ease, filter 0.25s ease;
 }
 
 .hero-banner-media:hover .hero-media-stage img {
-  transform: translateY(-2px) scale(1.04);
+  transform: scale(1.04);
   filter: drop-shadow(0 22px 28px rgba(15, 34, 56, 0.34));
 }
 
 .hero-image-placeholder {
   width: 100%;
-  min-height: 188px;
+  height: 100%;
+  min-height: 176px;
   display: grid;
   place-items: center;
   position: relative;
   z-index: 1;
-  margin-top: auto;
+  margin-top: 0;
   border-radius: 12px;
   border: 1px dashed rgba(113, 141, 184, 0.48);
   background: linear-gradient(145deg, rgba(245, 250, 255, 0.98), rgba(229, 239, 248, 0.84));
