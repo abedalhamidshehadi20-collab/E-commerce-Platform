@@ -1140,6 +1140,10 @@ button {
   text-align: right;
 }
 
+.align-right > * + * {
+  margin-left: 0.6rem;
+}
+
 .app-shell-loading {
   min-height: 100vh;
   display: grid;
