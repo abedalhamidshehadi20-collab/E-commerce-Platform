@@ -51,7 +51,7 @@ export default function OrdersPage() {
   }
 
   return (
-    <section className="container section">
+    <section className="container section orders-page">
       <div className="section-header">
         <div>
           <span className="eyebrow">Orders</span>
@@ -61,59 +61,116 @@ export default function OrdersPage() {
 
       {error ? <p className="page-error">{error}</p> : null}
 
-      <div className="order-list">
+      <div className="order-list orders-list">
         {list.map((order) => (
-          <article className="order-card" key={order.id}>
-            <div className="order-card-top">
-              <div>
+          <article className="order-card orders-card" key={order.id}>
+            <div className="order-card-top orders-card-top">
+              <div className="orders-card-ident">
                 <strong>{order.order_number}</strong>
                 <p>Placed on {formatDate(order.created_at)}</p>
               </div>
-              <div className="align-right">
+              <div className="align-right orders-card-total">
                 <StatusBadge status={order.status} />
                 <strong>{formatCurrency(order.total_price)}</strong>
               </div>
             </div>
-              <div className="order-card-bottom">
-              <span>{order.items_count ?? order.items?.length ?? 0} item(s)</span>
-              <Button variant="secondary" onClick={() => handleViewOrder(order.id)}>
+            <div className="order-card-bottom orders-card-bottom">
+              <span className="orders-card-items">
+                {order.items_count ?? order.items?.length ?? 0} item(s)
+              </span>
+              <Button
+                variant="secondary"
+                className="orders-toggle-button"
+                onClick={() => handleViewOrder(order.id)}
+              >
                 {openOrderId === order.id ? "Hide details" : "View details"}
               </Button>
             </div>
 
             {openOrderId === order.id ? (
-              <div className="order-detail-panel">
+              <div className="order-detail-panel orders-detail-panel">
                 {detailLoading && selectedOrder?.id !== order.id ? (
                   <LoadingSpinner label="Loading order detail..." />
                 ) : null}
                 {selectedOrder?.id === order.id ? (
                   <>
-                    <div className="detail-columns">
-                      <div>
+                    <div className="detail-columns orders-detail-columns">
+                      <section className="orders-detail-card">
                         <h4>Shipping</h4>
-                        <p>{selectedOrder.shipping_full_name}</p>
-                        <p>{selectedOrder.shipping_line1}</p>
-                        {selectedOrder.shipping_line2 ? <p>{selectedOrder.shipping_line2}</p> : null}
-                        <p>
-                          {selectedOrder.shipping_city}, {selectedOrder.shipping_state}{" "}
-                          {selectedOrder.shipping_postal_code}
+                        <p className="orders-detail-row">
+                          <span className="orders-detail-label">Name:</span>
+                          <strong className="orders-detail-value">
+                            {selectedOrder.shipping_full_name || "Not set"}
+                          </strong>
                         </p>
-                        <p>{selectedOrder.shipping_country}</p>
-                      </div>
-                      <div>
-                        <h4>Summary</h4>
-                        <p>Subtotal: {formatCurrency(selectedOrder.subtotal)}</p>
-                        <p>Shipping: {formatCurrency(selectedOrder.shipping_cost)}</p>
-                        <p>Total: {formatCurrency(selectedOrder.total_price)}</p>
-                      </div>
-                    </div>
-                    <div className="order-items-list">
-                      {selectedOrder.items.map((item) => (
-                        <div className="order-item-row" key={item.id}>
-                          <span>
-                            {item.product_name} × {item.quantity}
+                        <p className="orders-detail-row">
+                          <span className="orders-detail-label">Phone:</span>
+                          <span className="orders-detail-value">
+                            {selectedOrder.shipping_phone_number || "Not set"}
                           </span>
-                          <strong>{formatCurrency(item.line_total)}</strong>
+                        </p>
+                        <p className="orders-detail-row">
+                          <span className="orders-detail-label">Line 1:</span>
+                          <span className="orders-detail-value">
+                            {selectedOrder.shipping_line1 || "Not set"}
+                          </span>
+                        </p>
+                        {selectedOrder.shipping_line2 ? (
+                          <p className="orders-detail-row">
+                            <span className="orders-detail-label">Line 2:</span>
+                            <span className="orders-detail-value">{selectedOrder.shipping_line2}</span>
+                          </p>
+                        ) : null}
+                        <p className="orders-detail-row">
+                          <span className="orders-detail-label">City/State:</span>
+                          <span className="orders-detail-value">
+                            {[
+                              [selectedOrder.shipping_city, selectedOrder.shipping_state]
+                                .filter(Boolean)
+                                .join(", "),
+                              selectedOrder.shipping_postal_code,
+                            ]
+                              .filter(Boolean)
+                              .join(" ") || "Not set"}
+                          </span>
+                        </p>
+                        <p className="orders-detail-row">
+                          <span className="orders-detail-label">Country:</span>
+                          <span className="orders-detail-value">
+                            {selectedOrder.shipping_country || "Not set"}
+                          </span>
+                        </p>
+                      </section>
+                      <section className="orders-detail-card orders-summary-card">
+                        <h4>Summary</h4>
+                        <p className="orders-detail-row">
+                          <span className="orders-detail-label">Subtotal:</span>
+                          <strong className="orders-detail-value">
+                            {formatCurrency(selectedOrder.subtotal)}
+                          </strong>
+                        </p>
+                        <p className="orders-detail-row">
+                          <span className="orders-detail-label">Shipping:</span>
+                          <strong className="orders-detail-value">
+                            {formatCurrency(selectedOrder.shipping_cost)}
+                          </strong>
+                        </p>
+                        <p className="orders-detail-row">
+                          <span className="orders-detail-label">Total:</span>
+                          <strong className="orders-detail-value">
+                            {formatCurrency(selectedOrder.total_price)}
+                          </strong>
+                        </p>
+                      </section>
+                    </div>
+                    <div className="order-items-list orders-items-list">
+                      {selectedOrder.items.map((item) => (
+                        <div className="order-item-row orders-item-row" key={item.id}>
+                          <span className="orders-item-name">{item.product_name}</span>
+                          <div className="orders-item-meta">
+                            <span className="orders-item-qty">Qty: {item.quantity}</span>
+                            <strong>{formatCurrency(item.line_total)}</strong>
+                          </div>
                         </div>
                       ))}
                     </div>
