@@ -3637,8 +3637,8 @@ body {
 }
 
 .contact-panel {
-  padding: 1.45rem;
-  border-radius: 24px;
+  padding: 0.85rem;
+  border-radius: 18px;
 }
 
 .contact-note-card.contact-panel {
@@ -3648,16 +3648,16 @@ body {
 .contact-panel-kicker {
   display: inline-flex;
   color: #5c79aa;
-  font-size: 0.74rem;
+  font-size: 0.62rem;
   font-weight: 800;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .contact-panel-header-block {
   display: grid;
-  gap: 0.4rem;
-  margin-bottom: 1.2rem;
+  gap: 0.18rem;
+  margin-bottom: 0.55rem;
 }
 
 .contact-panel h2,
@@ -3670,7 +3670,7 @@ body {
 }
 
 .contact-panel h2 {
-  font-size: 1.7rem;
+  font-size: 0.98rem;
 }
 
 .contact-panel h3 {
@@ -3681,28 +3681,29 @@ body {
 .contact-route-list,
 .contact-standard-list {
   display: grid;
-  gap: 0.9rem;
+  gap: 0.4rem;
 }
 
 .contact-route-card {
-  padding: 1rem 1.05rem;
-  border-radius: 18px;
+  padding: 0.42rem 0.6rem;
+  border-radius: 12px;
   border: 1px solid rgba(210, 220, 236, 0.95);
   background: rgba(246, 249, 255, 0.86);
 }
 
 .contact-route-card strong {
   display: block;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.12rem;
   color: #17314f;
-  font-size: 1rem;
+  font-size: 0.72rem;
 }
 
 .contact-route-card p,
 .contact-form-header p {
   margin: 0;
   color: #607189;
-  line-height: 1.65;
+  font-size: 0.62rem;
+  line-height: 1.28;
 }
 
 .contact-topic-list {
