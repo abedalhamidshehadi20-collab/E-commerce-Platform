@@ -101,7 +101,11 @@ export default function ProductsPage() {
       <div className="catalog-layout">
         <aside className="filter-panel">
           <div className="filter-panel-header">
-            <h3>Filters</h3>
+            <div>
+              <span className="eyebrow">Refine results</span>
+              <h3>Filters</h3>
+              <p className="filter-panel-copy">Search, narrow, and sort the catalog in seconds.</p>
+            </div>
             {activeFilters.length ? (
               <button className="text-button" onClick={clearFilters}>
                 Clear all
