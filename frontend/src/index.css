@@ -2922,6 +2922,8 @@ body {
 .compact-product-copy {
   display: grid;
   gap: 0.2rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e4eaf5;
 }
 
 .compact-product-copy strong {
