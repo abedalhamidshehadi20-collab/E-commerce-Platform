@@ -3500,10 +3500,10 @@ body {
 .contact-hero-panel {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) 320px;
-  gap: 1.5rem;
-  padding: clamp(1.5rem, 3vw, 2.35rem);
-  border-radius: 28px;
+  grid-template-columns: minmax(0, 1.1fr) 280px;
+  gap: 1.15rem;
+  padding: clamp(1.15rem, 2.2vw, 1.7rem);
+  border-radius: 24px;
   border: 1px solid rgba(199, 212, 231, 0.92);
   background:
     radial-gradient(circle at top right, rgba(95, 143, 242, 0.18), transparent 30%),
@@ -3545,35 +3545,35 @@ body {
 
 .contact-copy h1 {
   max-width: 10ch;
-  margin: 0 0 1rem;
-  font-size: clamp(2.8rem, 6vw, 4.5rem);
-  line-height: 0.98;
+  margin: 0 0 0.8rem;
+  font-size: clamp(2.2rem, 4.8vw, 3.8rem);
+  line-height: 1;
 }
 
 .contact-copy p {
   max-width: 58ch;
   margin: 0;
   color: #55677f;
-  font-size: 1rem;
-  line-height: 1.75;
+  font-size: 0.95rem;
+  line-height: 1.65;
 }
 
 .contact-highlight-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1.6rem;
+  gap: 0.6rem;
+  margin-top: 1.15rem;
 }
 
 .contact-highlight-pill {
   display: inline-flex;
   align-items: center;
-  padding: 0.72rem 0.95rem;
+  padding: 0.62rem 0.85rem;
   border-radius: 999px;
   border: 1px solid rgba(192, 206, 229, 0.95);
   background: rgba(255, 255, 255, 0.78);
   color: #2b4f81;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 800;
   box-shadow: 0 12px 24px rgba(21, 42, 74, 0.06);
 }
@@ -3582,12 +3582,12 @@ body {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: 0.9rem;
+  gap: 0.7rem;
 }
 
 .contact-hero-summary-card {
-  padding: 1rem 1.05rem;
-  border-radius: 18px;
+  padding: 0.85rem 0.9rem;
+  border-radius: 16px;
   background: linear-gradient(180deg, rgba(25, 44, 75, 0.98), rgba(39, 62, 96, 0.95));
   box-shadow: 0 16px 32px rgba(17, 30, 51, 0.18);
 }
@@ -3603,10 +3603,10 @@ body {
 
 .contact-hero-summary-card strong {
   display: block;
-  margin-top: 0.45rem;
+  margin-top: 0.3rem;
   color: #ffffff;
-  font-size: 0.98rem;
-  line-height: 1.45;
+  font-size: 0.92rem;
+  line-height: 1.35;
 }
 
 .contact-layout {
