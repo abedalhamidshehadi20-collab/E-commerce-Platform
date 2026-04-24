@@ -236,22 +236,7 @@ export default function HomePage() {
                 ) : null}
               </div>
             </div>
-
-            <div className="market-panel countdown-panel">
-              <div className="panel-title-row">
-                <h3>Deals and offers</h3>
-                <Link to="/products">See all</Link>
-              </div>
-              <p>Fresh markdowns on featured products and fast-moving inventory.</p>
-              <div className="countdown-row">
-                {countdownUnits.map((unit) => (
-                  <div key={unit.label} className="countdown-box">
-                    <strong>{unit.value}</strong>
-                    <span>{unit.label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            
           </aside>
 
           <div className="market-stage">
