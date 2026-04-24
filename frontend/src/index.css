@@ -943,22 +943,37 @@ button {
 
 .profile-address-body {
   display: grid;
-  gap: 0.28rem;
+  gap: 0.34rem;
 }
 
-.profile-address-name {
+.profile-address-row {
   margin: 0;
-  color: var(--text);
-  font-size: 0.92rem;
-  font-weight: 700;
-  line-height: 1.45;
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  gap: 0.45rem;
+  align-items: start;
 }
 
-.profile-address-line {
+.profile-address-label {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.42;
+}
+
+.profile-address-value {
   margin: 0;
   color: var(--muted);
   font-size: 0.9rem;
   line-height: 1.42;
+  overflow-wrap: anywhere;
+}
+
+.profile-address-row strong.profile-address-value {
+  color: var(--text);
+  font-weight: 700;
 }
 
 .auth-card {
@@ -1504,6 +1519,11 @@ button {
 
   .dashboard-order-item {
     padding: 0.85rem;
+  }
+
+  .profile-address-row {
+    grid-template-columns: 1fr;
+    gap: 0.08rem;
   }
 }
 

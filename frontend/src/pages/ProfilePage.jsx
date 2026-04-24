@@ -241,23 +241,47 @@ export default function ProfilePage() {
           <p className="profile-address-empty">No saved addresses yet.</p>
         ) : null}
         <div className="address-grid profile-address-grid">
-          {addresses.map((address) => (
-            <div className="address-card profile-address-card" key={address.id}>
-              <div className="address-card-top profile-address-card-top">
-                <strong>{address.label || "Address"}</strong>
-                {address.is_default ? <span className="default-pill">Default</span> : null}
+          {addresses.map((address) => {
+            const cityState = [address.city, address.state].filter(Boolean).join(", ");
+            const cityStatePostal = [cityState, address.postal_code].filter(Boolean).join(" ");
+
+            return (
+              <div className="address-card profile-address-card" key={address.id}>
+                <div className="address-card-top profile-address-card-top">
+                  <strong>{address.label || "Address"}</strong>
+                  {address.is_default ? <span className="default-pill">Default</span> : null}
+                </div>
+                <div className="profile-address-body">
+                  <p className="profile-address-row">
+                    <span className="profile-address-label">Name:</span>
+                    <strong className="profile-address-value">{address.full_name || "Not set"}</strong>
+                  </p>
+                  <p className="profile-address-row">
+                    <span className="profile-address-label">Phone:</span>
+                    <span className="profile-address-value">{address.phone_number || "Not set"}</span>
+                  </p>
+                  <p className="profile-address-row">
+                    <span className="profile-address-label">Line 1:</span>
+                    <span className="profile-address-value">{address.line1 || "Not set"}</span>
+                  </p>
+                  {address.line2 ? (
+                    <p className="profile-address-row">
+                      <span className="profile-address-label">Line 2:</span>
+                      <span className="profile-address-value">{address.line2}</span>
+                    </p>
+                  ) : null}
+                  <p className="profile-address-row">
+                    <span className="profile-address-label">City/State:</span>
+                    <span className="profile-address-value">{cityStatePostal || "Not set"}</span>
+                  </p>
+                  <p className="profile-address-row">
+                    <span className="profile-address-label">Country:</span>
+                    <span className="profile-address-value">{address.country || "Not set"}</span>
+                  </p>
+                </div>
               </div>
-              <div className="profile-address-body">
-                <p className="profile-address-name">{address.full_name}</p>
-                <p className="profile-address-line">{address.line1}</p>
-                {address.line2 ? <p className="profile-address-line">{address.line2}</p> : null}
-                <p className="profile-address-line">
-                {address.city}, {address.state} {address.postal_code}
-                </p>
-                <p className="profile-address-line">{address.country}</p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
