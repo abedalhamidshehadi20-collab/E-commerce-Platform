@@ -902,6 +902,59 @@ button {
   margin-bottom: 1.5rem;
 }
 
+.dashboard-section {
+  position: relative;
+}
+
+.dashboard-header h1 {
+  max-width: 18ch;
+}
+
+.dashboard-stats-grid {
+  gap: 1.1rem;
+  margin-bottom: 1.15rem;
+}
+
+.dashboard-stat-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.98), rgba(246, 249, 255, 0.95));
+  box-shadow: var(--shadow-card);
+}
+
+.dashboard-stat-card::before {
+  content: "";
+  position: absolute;
+  left: 1.15rem;
+  right: 1.15rem;
+  top: 0;
+  height: 3px;
+  border-radius: 0 0 999px 999px;
+  background: linear-gradient(90deg, rgba(54, 101, 243, 0.68), rgba(54, 101, 243, 0.12));
+}
+
+.dashboard-stat-label {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.01em;
+}
+
+.dashboard-stat-card strong {
+  margin: 0.5rem 0 0.45rem;
+  font-size: clamp(1.8rem, 2.2vw, 2.2rem);
+  line-height: 1.05;
+}
+
+.dashboard-stat-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
 .stat-card {
   border-radius: 1.5rem;
   padding: 1.4rem;
@@ -917,6 +970,33 @@ button {
 .contact-layout {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.5rem;
+}
+
+.dashboard-content-grid {
+  gap: 1.1rem;
+  align-items: start;
+}
+
+.dashboard-panel {
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 251, 255, 0.95));
+  box-shadow: var(--shadow-card);
+}
+
+.dashboard-panel-header {
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.8rem;
+  border-bottom: 1px solid rgba(217, 222, 232, 0.8);
+}
+
+.dashboard-panel-header h3 {
+  margin: 0;
+  font-size: 1.18rem;
+}
+
+.dashboard-panel-header .text-link {
+  font-size: 0.82rem;
+  font-weight: 800;
 }
 
 .panel-card-header {
@@ -940,6 +1020,47 @@ button {
   background: var(--surface-muted);
 }
 
+.dashboard-order-list {
+  gap: 0.7rem;
+}
+
+.dashboard-order-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.9rem;
+  border: 1px solid rgba(217, 222, 232, 0.82);
+  background: linear-gradient(180deg, rgba(246, 247, 251, 0.9), rgba(242, 245, 251, 0.92));
+}
+
+.dashboard-order-meta strong {
+  display: inline-block;
+  margin-bottom: 0.28rem;
+  font-size: 0.94rem;
+  letter-spacing: 0.01em;
+}
+
+.dashboard-order-meta p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+
+.dashboard-order-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-align: right;
+}
+
+.dashboard-order-right > * + * {
+  margin-left: 0;
+}
+
+.dashboard-order-right strong {
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+}
+
 .action-link-card {
   padding: 1rem 1.1rem;
   border-radius: 1rem;
@@ -947,6 +1068,35 @@ button {
   background: var(--surface);
   font-weight: 800;
   transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.dashboard-action-stack {
+  gap: 0.72rem;
+}
+
+.dashboard-action-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 249, 255, 0.9));
+  border-color: rgba(217, 222, 232, 0.95);
+}
+
+.dashboard-action-link::after {
+  content: "->";
+  color: var(--primary-dark);
+  font-size: 0.9rem;
+  font-weight: 800;
+  transition: transform 0.2s ease;
+}
+
+.dashboard-action-link:hover {
+  border-color: rgba(54, 101, 243, 0.28);
+  transform: translateX(2px);
+}
+
+.dashboard-action-link:hover::after {
+  transform: translateX(2px);
 }
 
 .order-card {
@@ -1226,6 +1376,15 @@ button {
     grid-template-columns: 1fr;
   }
 
+  .dashboard-order-item {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-order-right {
+    justify-content: flex-start;
+    text-align: left;
+  }
+
   .catalog-summary,
   .section-header,
   .order-card-top,
@@ -1258,6 +1417,14 @@ button {
 
   .hero-actions {
     grid-auto-flow: row;
+  }
+
+  .dashboard-stat-card {
+    padding: 1.15rem 1.1rem;
+  }
+
+  .dashboard-order-item {
+    padding: 0.85rem;
   }
 }
 
