@@ -231,25 +231,31 @@ export default function ProfilePage() {
         </form>
       </div>
 
-      <div className="panel-card">
-        <div className="panel-card-header">
+      <div className="panel-card profile-addresses-panel">
+        <div className="panel-card-header profile-addresses-header">
           <h3>Saved addresses</h3>
+          <span className="profile-address-count">{addresses.length} saved</span>
         </div>
         {addressesLoading ? <LoadingSpinner label="Loading addresses..." /> : null}
-        <div className="address-grid">
+        {!addressesLoading && !addresses.length ? (
+          <p className="profile-address-empty">No saved addresses yet.</p>
+        ) : null}
+        <div className="address-grid profile-address-grid">
           {addresses.map((address) => (
-            <div className="address-card" key={address.id}>
-              <div className="address-card-top">
+            <div className="address-card profile-address-card" key={address.id}>
+              <div className="address-card-top profile-address-card-top">
                 <strong>{address.label || "Address"}</strong>
                 {address.is_default ? <span className="default-pill">Default</span> : null}
               </div>
-              <p>{address.full_name}</p>
-              <p>{address.line1}</p>
-              {address.line2 ? <p>{address.line2}</p> : null}
-              <p>
+              <div className="profile-address-body">
+                <p className="profile-address-name">{address.full_name}</p>
+                <p className="profile-address-line">{address.line1}</p>
+                {address.line2 ? <p className="profile-address-line">{address.line2}</p> : null}
+                <p className="profile-address-line">
                 {address.city}, {address.state} {address.postal_code}
-              </p>
-              <p>{address.country}</p>
+                </p>
+                <p className="profile-address-line">{address.country}</p>
+              </div>
             </div>
           ))}
         </div>
