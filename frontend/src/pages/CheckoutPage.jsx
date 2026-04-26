@@ -7,6 +7,7 @@ import CheckoutPaymentMethodSelector from "../components/CheckoutPaymentMethodSe
 import EmptyState from "../components/EmptyState";
 import Input from "../components/Input";
 import Modal from "../components/Modal";
+import MockCardPaymentForm from "../components/MockCardPaymentForm";
 import StripeCheckoutForm from "../components/StripeCheckoutForm";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { fetchAddresses } from "../store/slices/authSlice";
@@ -202,6 +203,17 @@ export default function CheckoutPage() {
   }, [addressesError, error, fieldErrors, localError, paymentError]);
 
   const orderTotal = useMemo(() => formatCurrency(cart.subtotal), [cart.subtotal]);
+  const selectedSavedAddress = useMemo(
+    () => addresses.find((address) => String(address.id) === form.address_id) || null,
+    [addresses, form.address_id]
+  );
+  const defaultCardholderName = useMemo(() => {
+    if (form.addressMode === "saved") {
+      return selectedSavedAddress?.full_name || user?.full_name || "";
+    }
+
+    return form.full_name || user?.full_name || "";
+  }, [form.addressMode, form.full_name, selectedSavedAddress, user?.full_name]);
 
   const invalidatePaymentState = () => {
     if (paymentSession) {
@@ -507,49 +519,24 @@ export default function CheckoutPage() {
               ) : null}
 
               {showCardSection && paymentSession.provider === "mock" ? (
-                <div className="payment-panel-copy">
-                  <h3>Mock card payment</h3>
-                  <p>
-                    Local test mode is active. Choose an outcome below to simulate an approved or
-                    declined card payment safely.
-                  </p>
-                  <Input
-                    as="select"
-                    label="Mock payment result"
-                    value={mockResult}
-                    onChange={(event) => setMockResult(event.target.value)}
-                    options={[
-                      { value: "succeeded", label: "Approved payment" },
-                      { value: "failed", label: "Declined payment" },
-                      { value: "canceled", label: "Canceled by customer" },
-                      { value: "timeout", label: "Processing timeout" },
-                    ]}
-                  />
-                  <Button
-                    type="button"
-                    className="stretch"
-                    loading={paymentConfirmLoading}
-                    onClick={handleConfirmMockPayment}
-                  >
-                    Run mock payment
-                  </Button>
-                </div>
+                <MockCardPaymentForm
+                  amountLabel={orderTotal}
+                  defaultCardholderName={defaultCardholderName}
+                  loading={paymentConfirmLoading}
+                  onSubmit={handleConfirmMockPayment}
+                  simulateResult={mockResult}
+                  onSimulateResultChange={setMockResult}
+                />
               ) : null}
 
               {showCardSection && paymentSession.provider === "stripe" ? (
-                <div className="payment-panel-copy">
-                  <h3>Secure card payment</h3>
-                  <p>
-                    Visa, Mastercard, and other officially issued bank cards are processed by
-                    Stripe in a PCI-compliant payment form.
-                  </p>
-                  <StripeCheckoutForm
-                    paymentSession={paymentSession}
-                    amountLabel={orderTotal}
-                    onPaymentSubmitted={handleStripePaymentSubmitted}
-                    loading={paymentConfirmLoading}
-                  />
-                </div>
+                <StripeCheckoutForm
+                  paymentSession={paymentSession}
+                  amountLabel={orderTotal}
+                  defaultCardholderName={defaultCardholderName}
+                  onPaymentSubmitted={handleStripePaymentSubmitted}
+                  loading={paymentConfirmLoading}
+                />
               ) : null}
             </div>
           ) : null}
