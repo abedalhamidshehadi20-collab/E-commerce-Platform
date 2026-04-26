@@ -3,7 +3,7 @@ from rest_framework import serializers
 from apps.cart.models import Cart
 from apps.users.models import Address
 
-from .models import Order, OrderItem
+from .models import CheckoutSession, Order, OrderItem
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -28,8 +28,11 @@ class OrderListSerializer(serializers.ModelSerializer):
             "id",
             "order_number",
             "status",
+            "payment_method",
+            "payment_status",
             "total_price",
             "items_count",
+            "paid_at",
             "created_at",
         ]
 
@@ -46,6 +49,9 @@ class OrderDetailSerializer(serializers.ModelSerializer):
             "id",
             "order_number",
             "status",
+            "payment_method",
+            "payment_status",
+            "transaction_reference",
             "shipping_full_name",
             "shipping_phone_number",
             "shipping_line1",
@@ -58,12 +64,19 @@ class OrderDetailSerializer(serializers.ModelSerializer):
             "subtotal",
             "shipping_cost",
             "total_price",
+            "payment_initiated_at",
+            "paid_at",
             "created_at",
             "items",
         ]
 
 
-class CheckoutSerializer(serializers.Serializer):
+class BaseCheckoutSerializer(serializers.Serializer):
+    payment_method = serializers.ChoiceField(
+        choices=Order.PaymentMethod.choices,
+        required=False,
+        default=Order.PaymentMethod.COD,
+    )
     address_id = serializers.IntegerField(required=False)
     full_name = serializers.CharField(required=False, allow_blank=False)
     phone_number = serializers.CharField(required=False, allow_blank=False)
@@ -111,3 +124,62 @@ class CheckoutSerializer(serializers.Serializer):
             raise serializers.ValidationError(missing)
 
         return attrs
+
+
+class CheckoutSerializer(BaseCheckoutSerializer):
+    def validate_payment_method(self, value):
+        if value != Order.PaymentMethod.COD:
+            raise serializers.ValidationError(
+                "Use the payment session endpoint for card payments."
+            )
+        return value
+
+
+class PaymentSessionCreateSerializer(BaseCheckoutSerializer):
+    payment_method = serializers.ChoiceField(
+        choices=Order.PaymentMethod.choices,
+        required=False,
+        default=Order.PaymentMethod.CARD,
+    )
+
+    def validate_payment_method(self, value):
+        if value != Order.PaymentMethod.CARD:
+            raise serializers.ValidationError("Card payment is required for this step.")
+        return value
+
+
+class PaymentSessionConfirmSerializer(serializers.Serializer):
+    checkout_session_id = serializers.UUIDField()
+    simulate_result = serializers.ChoiceField(
+        choices=[
+            ("", "None"),
+            ("succeeded", "Succeeded"),
+            ("failed", "Failed"),
+            ("canceled", "Canceled"),
+            ("timeout", "Timeout"),
+        ],
+        required=False,
+        allow_blank=True,
+        default="",
+    )
+
+
+class PaymentSessionSerializer(serializers.ModelSerializer):
+    checkout_session_id = serializers.UUIDField(source="public_id", read_only=True)
+    amount = serializers.DecimalField(source="total_price", max_digits=10, decimal_places=2)
+    mock_mode = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CheckoutSession
+        fields = [
+            "checkout_session_id",
+            "provider",
+            "status",
+            "amount",
+            "currency",
+            "mock_mode",
+            "expires_at",
+        ]
+
+    def get_mock_mode(self, obj):
+        return obj.provider == CheckoutSession.Provider.MOCK

@@ -6,3 +6,4 @@ django-filter>=24.3,<26.0
 django-cors-headers>=4.4,<5.0
 psycopg2-binary>=2.9,<3.0
 Pillow>=10.4,<12.0
+stripe>=14.4,<15.0

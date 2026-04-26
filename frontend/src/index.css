@@ -753,6 +753,54 @@ button {
   color: var(--success);
 }
 
+.payment-method-field {
+  margin-bottom: 1.35rem;
+}
+
+.payment-method-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.payment-method-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: start;
+  padding: 1rem;
+  border: 1px solid rgba(216, 226, 238, 0.95);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 249, 255, 0.95));
+  cursor: pointer;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.payment-method-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(95, 143, 242, 0.4);
+}
+
+.payment-method-card.active {
+  border-color: rgba(63, 114, 219, 0.62);
+  box-shadow: 0 14px 28px rgba(63, 114, 219, 0.12);
+}
+
+.payment-method-card input {
+  margin-top: 0.18rem;
+}
+
+.payment-method-card strong {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.payment-method-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
 .product-detail-grid {
   display: grid;
   grid-template-columns: 1fr 0.9fr;
@@ -928,6 +976,29 @@ button {
   gap: 0.9rem;
   position: sticky;
   top: 6.5rem;
+}
+
+.payment-panel {
+  margin-bottom: 1rem;
+  padding: 1.1rem;
+  border: 1px solid rgba(216, 226, 238, 0.92);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(247, 250, 255, 0.95), rgba(255, 255, 255, 0.98));
+}
+
+.payment-panel-copy h3 {
+  margin: 0 0 0.35rem;
+}
+
+.payment-panel-copy p {
+  margin-top: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.payment-element-shell {
+  display: grid;
+  gap: 1rem;
 }
 
 .summary-item,
@@ -1332,6 +1403,13 @@ button {
   letter-spacing: 0.01em;
 }
 
+.orders-card-payment {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
 .orders-card-bottom {
   margin-top: 1.05rem;
 }
@@ -1476,6 +1554,19 @@ button {
   color: var(--primary-dark);
 }
 
+.status-paid,
+.status-completed {
+  background: rgba(42, 157, 125, 0.14);
+  color: var(--success);
+}
+
+.status-unpaid,
+.status-requires_payment_method,
+.status-failed {
+  background: rgba(216, 156, 58, 0.12);
+  color: #936611;
+}
+
 .status-shipped {
   background: rgba(120, 97, 219, 0.12);
   color: #5a47a5;
@@ -1488,6 +1579,7 @@ button {
 }
 
 .status-cancelled,
+.status-canceled,
 .status-read {
   background: rgba(214, 90, 90, 0.12);
   color: var(--danger);
@@ -3357,6 +3449,10 @@ body {
   .header-main-actions {
     width: 100%;
     justify-content: flex-start;
+  }
+
+  .payment-method-grid {
+    grid-template-columns: 1fr;
   }
 
   .header-action-link,

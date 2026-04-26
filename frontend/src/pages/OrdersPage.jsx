@@ -71,6 +71,10 @@ export default function OrdersPage() {
               </div>
               <div className="align-right orders-card-total">
                 <StatusBadge status={order.status} />
+                <span className="orders-card-payment">
+                  {String(order.payment_method || "cod").replace(/_/g, " ")} /{" "}
+                  {String(order.payment_status || "unpaid").replace(/_/g, " ")}
+                </span>
                 <strong>{formatCurrency(order.total_price)}</strong>
               </div>
             </div>
@@ -143,6 +147,26 @@ export default function OrdersPage() {
                       </section>
                       <section className="orders-detail-card orders-summary-card">
                         <h4>Summary</h4>
+                        <p className="orders-detail-row">
+                          <span className="orders-detail-label">Payment method:</span>
+                          <strong className="orders-detail-value">
+                            {String(selectedOrder.payment_method || "cod").replace(/_/g, " ")}
+                          </strong>
+                        </p>
+                        <p className="orders-detail-row">
+                          <span className="orders-detail-label">Payment status:</span>
+                          <strong className="orders-detail-value">
+                            {String(selectedOrder.payment_status || "unpaid").replace(/_/g, " ")}
+                          </strong>
+                        </p>
+                        {selectedOrder.transaction_reference ? (
+                          <p className="orders-detail-row">
+                            <span className="orders-detail-label">Transaction:</span>
+                            <strong className="orders-detail-value">
+                              {selectedOrder.transaction_reference}
+                            </strong>
+                          </p>
+                        ) : null}
                         <p className="orders-detail-row">
                           <span className="orders-detail-label">Subtotal:</span>
                           <strong className="orders-detail-value">
