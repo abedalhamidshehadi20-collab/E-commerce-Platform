@@ -300,8 +300,6 @@ export default function Navbar() {
               </NavLink>
             ))}
 
-            <NavLink to="/wishlist">Wishlist</NavLink>
-
             {isAuthenticated ? (
               <>
                 <NavLink to="/orders">Orders</NavLink>
