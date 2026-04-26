@@ -62,6 +62,16 @@ function DashboardIcon() {
   );
 }
 
+function OrdersIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="4" y="5" width="16" height="14" rx="2" fill="none" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M8 10h8" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+      <path d="M8 14h5" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
 function LogoutIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -254,6 +264,16 @@ export default function Navbar() {
                   >
                     <DashboardIcon />
                     <span>My Dashboard</span>
+                  </Link>
+
+                  <Link
+                    className="header-account-menu-item"
+                    to="/orders"
+                    role="menuitem"
+                    onClick={() => setAccountMenuOpen(false)}
+                  >
+                    <OrdersIcon />
+                    <span>My Orders</span>
                   </Link>
 
                   <button
