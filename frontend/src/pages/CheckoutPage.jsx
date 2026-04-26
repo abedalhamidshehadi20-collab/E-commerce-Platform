@@ -610,12 +610,19 @@ export default function CheckoutPage() {
           navigate("/orders");
         }}
       >
-        <p>
-          {selectedOrder?.payment_method === "card"
-            ? "Your payment was confirmed and the order has been placed."
-            : "Your order has been placed and the cart has been cleared."}
-        </p>
-        {selectedOrder ? <p>Order reference: {selectedOrder.order_number}</p> : null}
+        <div className="checkout-success-copy">
+          <p className="checkout-success-message">
+            {selectedOrder?.payment_method === "card"
+              ? "Your payment was confirmed and the order has been placed."
+              : "Your order has been placed and the cart has been cleared."}
+          </p>
+          {selectedOrder ? (
+            <div className="checkout-order-reference">
+              <span>Order reference</span>
+              <strong>{selectedOrder.order_number}</strong>
+            </div>
+          ) : null}
+        </div>
       </Modal>
     </section>
   );
