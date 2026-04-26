@@ -1352,6 +1352,126 @@ button {
   font-size: 0.9rem;
 }
 
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.8rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid rgba(214, 223, 236, 0.95);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at top right, rgba(96, 139, 229, 0.12), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(246, 249, 255, 0.96));
+  box-shadow:
+    0 16px 32px rgba(18, 34, 61, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.pagination-meta {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.pagination-label {
+  color: #70809b;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pagination-meta strong {
+  color: #173055;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.pagination-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0 0.95rem;
+  border: 1px solid rgba(204, 214, 229, 0.95);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #304767;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease,
+    color 0.18s ease;
+}
+
+.pagination-button svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.pagination-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(144, 170, 214, 0.95);
+  background: #ffffff;
+  box-shadow: 0 10px 22px rgba(22, 40, 74, 0.08);
+}
+
+.pagination-button.active {
+  border-color: rgba(63, 114, 219, 0.58);
+  background: linear-gradient(135deg, #5f8ff2 0%, #3f72db 100%);
+  color: #ffffff;
+  box-shadow: 0 12px 22px rgba(63, 114, 219, 0.28);
+}
+
+.pagination-button:disabled {
+  border-color: rgba(220, 226, 237, 0.96);
+  background: rgba(244, 247, 252, 0.92);
+  color: #9aa7bb;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.pagination-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(95, 143, 242, 0.16);
+}
+
+.pagination-button-nav {
+  padding: 0 1rem;
+}
+
+.pagination-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  color: #70809b;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
 .summary-item,
 .summary-row {
   align-items: center;
@@ -2325,6 +2445,16 @@ button {
 
   .card-payment-field-span-2 {
     grid-column: 1 / -1;
+  }
+
+  .pagination {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .pagination-controls {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .orders-detail-columns {
@@ -4188,6 +4318,25 @@ body {
 
   .payment-method-grid {
     grid-template-columns: 1fr;
+  }
+
+  .pagination {
+    padding: 0.95rem;
+  }
+
+  .pagination-controls {
+    gap: 0.6rem;
+  }
+
+  .pagination-pages {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .pagination-button-nav {
+    min-width: calc(50% - 0.3rem);
   }
 
   .card-payment-header,
