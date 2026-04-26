@@ -567,21 +567,33 @@ export default function CheckoutPage() {
           ) : null}
         </form>
 
-        <aside className="summary-card">
-          <h3>Order summary</h3>
-          {cart.items.map((item) => (
-            <div key={item.id} className="summary-item">
-              <span>
-                {item.product.name} x {item.quantity}
-              </span>
-              <strong>{formatCurrency(item.line_total)}</strong>
-            </div>
-          ))}
-          <div className="summary-row">
-            <span>Payment method</span>
-            <strong>{form.payment_method === "cod" ? "Cash on Delivery" : "Card Payment"}</strong>
+        <aside className="summary-card checkout-summary-card">
+          <div className="checkout-summary-header">
+            <h3>Order summary</h3>
+            <span className="checkout-summary-count">
+              {cart.total_items} {cart.total_items === 1 ? "item" : "items"}
+            </span>
           </div>
-          <div className="summary-row">
+
+          <div className="checkout-summary-items">
+            {cart.items.map((item) => (
+              <div key={item.id} className="summary-item checkout-summary-item">
+                <span>
+                  {item.product.name} x {item.quantity}
+                </span>
+                <strong>{formatCurrency(item.line_total)}</strong>
+              </div>
+            ))}
+          </div>
+
+          <div className="summary-row checkout-summary-row">
+            <span>Payment method</span>
+            <span className={`checkout-payment-chip ${form.payment_method === "cod" ? "cod" : "card"}`}>
+              {form.payment_method === "cod" ? "Cash on Delivery" : "Card Payment"}
+            </span>
+          </div>
+
+          <div className="summary-row checkout-summary-row checkout-summary-total">
             <span>Total</span>
             <strong>{orderTotal}</strong>
           </div>
