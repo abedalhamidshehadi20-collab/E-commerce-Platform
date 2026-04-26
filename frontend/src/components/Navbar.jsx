@@ -72,6 +72,22 @@ function OrdersIcon() {
   );
 }
 
+function ProfileIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="5" y="4" width="14" height="16" rx="2" fill="none" stroke="currentColor" strokeWidth="1.8" />
+      <circle cx="12" cy="10" r="2.5" fill="none" stroke="currentColor" strokeWidth="1.8" />
+      <path
+        d="M8.75 16.25a4 4 0 0 1 6.5 0"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
 function LogoutIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -264,6 +280,16 @@ export default function Navbar() {
                   >
                     <DashboardIcon />
                     <span>My Dashboard</span>
+                  </Link>
+
+                  <Link
+                    className="header-account-menu-item"
+                    to="/profile"
+                    role="menuitem"
+                    onClick={() => setAccountMenuOpen(false)}
+                  >
+                    <ProfileIcon />
+                    <span>My Profile</span>
                   </Link>
 
                   <Link
