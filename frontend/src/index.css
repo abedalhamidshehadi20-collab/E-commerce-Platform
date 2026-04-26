@@ -1270,6 +1270,28 @@ button {
   margin-top: 1rem;
 }
 
+.auth-supporting-copy {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.auth-helper-row {
+  margin: -0.25rem 0 0.75rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.auth-helper-link {
+  color: var(--primary-dark);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.auth-helper-link:hover {
+  text-decoration: underline;
+}
+
 .stats-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;

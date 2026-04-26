@@ -154,6 +154,12 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+EMAIL_BACKEND = os.getenv(
+    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+)
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "no-reply@ashstore.local")
+
 ADMIN_SITE_HEADER = "E-commerce Platform Administration"
 ADMIN_SITE_TITLE = "E-commerce Admin"
 ADMIN_INDEX_TITLE = "Store Operations"

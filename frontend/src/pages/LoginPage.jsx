@@ -49,6 +49,11 @@ export default function LoginPage() {
             onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
             required
           />
+          <div className="auth-helper-row">
+            <Link className="auth-helper-link" to="/forgot-password">
+              Forgot password?
+            </Link>
+          </div>
           {error || localError ? <p className="page-error">{localError || error}</p> : null}
           <Button type="submit" className="stretch" loading={loading}>
             Sign in
