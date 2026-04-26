@@ -223,7 +223,6 @@ it("shows a declined mock card payment without creating an order", async () => {
   await user.click(screen.getByLabelText(/card payment/i));
   await user.click(screen.getByRole("button", { name: /continue to secure card payment/i }));
   await screen.findByText(/mock card payment/i);
-  await user.selectOptions(screen.getByLabelText(/test outcome/i), "failed");
   await user.click(screen.getByRole("button", { name: /pay now/i }));
 
   expect(

@@ -1235,15 +1235,6 @@ button {
   border-color: rgba(214, 90, 90, 0.55);
 }
 
-.mock-payment-field {
-  margin-top: 0.25rem;
-}
-
-.mock-payment-field small {
-  color: var(--muted);
-  line-height: 1.5;
-}
-
 .card-payment-preview-block {
   display: grid;
   gap: 0.7rem;

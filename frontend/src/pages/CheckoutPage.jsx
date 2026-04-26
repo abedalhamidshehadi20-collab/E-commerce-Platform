@@ -122,7 +122,6 @@ export default function CheckoutPage() {
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
   const [localError, setLocalError] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
-  const [mockResult, setMockResult] = useState("succeeded");
   const formRef = useRef(null);
 
   useEffect(() => {
@@ -267,7 +266,7 @@ export default function CheckoutPage() {
       const response = await dispatch(
         confirmPaymentSession({
           checkout_session_id: paymentSession.checkout_session_id,
-          simulate_result: mockResult,
+          simulate_result: "succeeded",
         })
       ).unwrap();
 
@@ -524,8 +523,6 @@ export default function CheckoutPage() {
                   defaultCardholderName={defaultCardholderName}
                   loading={paymentConfirmLoading}
                   onSubmit={handleConfirmMockPayment}
-                  simulateResult={mockResult}
-                  onSimulateResultChange={setMockResult}
                 />
               ) : null}
 

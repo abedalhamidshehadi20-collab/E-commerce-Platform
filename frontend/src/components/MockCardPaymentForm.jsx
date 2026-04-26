@@ -41,8 +41,6 @@ export default function MockCardPaymentForm({
   defaultCardholderName = "",
   loading = false,
   onSubmit,
-  simulateResult,
-  onSimulateResultChange,
 }) {
   const [cardNumber, setCardNumber] = useState("");
   const [cardholderName, setCardholderName] = useState(defaultCardholderName);
@@ -170,21 +168,6 @@ export default function MockCardPaymentForm({
           expiryLabel={expiryLabel}
         />
       </div>
-
-      <label className="card-payment-field card-payment-field-full mock-payment-field">
-        <span>Test outcome</span>
-        <select
-          className="card-payment-control"
-          value={simulateResult}
-          onChange={(event) => onSimulateResultChange(event.target.value)}
-        >
-          <option value="succeeded">Approved payment</option>
-          <option value="failed">Declined payment</option>
-          <option value="canceled">Canceled by customer</option>
-          <option value="timeout">Processing timeout</option>
-        </select>
-        <small>Used only in local development to simulate the payment gateway response.</small>
-      </label>
 
       <Button type="button" className="stretch" loading={loading} onClick={handleConfirm}>
         Pay now
