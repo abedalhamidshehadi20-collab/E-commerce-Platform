@@ -2845,7 +2845,8 @@ body {
 
 .feature-category-card {
   position: relative;
-  min-height: 94px;
+  min-height: 190px;
+  height: 190px;
   display: grid;
   grid-template-columns: 1fr 105px;
   gap: 0.75rem;
@@ -2862,7 +2863,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 94px;
+  min-height: calc(94px * 1.15);
   text-align: center;
   color: var(--muted);
 }
@@ -3576,7 +3577,8 @@ body {
 
   .feature-category-card {
     grid-template-columns: 1fr;
-    min-height: auto;
+    min-height: calc(94px * 1.15);
+    height: auto;
   }
 
   .feature-category-art {
