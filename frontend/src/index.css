@@ -2684,41 +2684,82 @@ body {
   grid-template-columns: auto 1fr auto;
   align-items: stretch;
   overflow: hidden;
-  border: 2px solid var(--primary);
-  border-radius: 8px;
-  background: #ffffff;
+  min-height: 52px;
+  border: 1px solid rgba(198, 210, 231, 0.96);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(248, 250, 255, 0.97));
+  box-shadow:
+    0 12px 26px rgba(24, 41, 74, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+.header-search-form:hover {
+  border-color: rgba(154, 178, 221, 0.96);
+  box-shadow:
+    0 16px 32px rgba(24, 41, 74, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.header-search-form:focus-within {
+  border-color: rgba(54, 101, 243, 0.72);
+  box-shadow:
+    0 0 0 4px rgba(54, 101, 243, 0.12),
+    0 16px 30px rgba(24, 41, 74, 0.1);
 }
 
 .header-search-category {
   display: flex;
   align-items: center;
-  padding: 0 0.85rem;
-  border-right: 1px solid var(--border);
-  background: #fbfcff;
-  color: var(--text);
-  font-size: 0.86rem;
-  font-weight: 700;
+  padding: 0 1rem 0 1.1rem;
+  border-right: 1px solid rgba(219, 225, 235, 0.96);
+  background: linear-gradient(180deg, rgba(250, 252, 255, 0.98), rgba(244, 247, 253, 0.96));
+  color: #1e3558;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
   white-space: nowrap;
 }
 
 .header-search-input {
   min-width: 0;
-  min-height: 44px;
-  padding: 0 0.95rem;
+  min-height: 52px;
+  padding: 0 1rem;
   border: none;
-  background: #ffffff;
+  background: transparent;
+  color: var(--text);
   font: inherit;
   outline: none;
 }
 
+.header-search-input::placeholder {
+  color: #8b97aa;
+}
+
 .header-search-submit {
-  min-width: 86px;
-  padding: 0 1rem;
+  min-width: 104px;
+  padding: 0 1.2rem;
   border: none;
-  background: var(--primary);
+  background: linear-gradient(135deg, #4a79f5 0%, #2f62f4 55%, #224fd1 100%);
   color: #ffffff;
   font: inherit;
-  font-weight: 700;
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.12);
+  transition: filter 0.18s ease, transform 0.18s ease;
+}
+
+.header-search-submit:hover {
+  filter: brightness(1.03);
+}
+
+.header-search-submit:active {
+  transform: scale(0.99);
 }
 
 .header-main-actions,
