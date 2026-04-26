@@ -304,7 +304,6 @@ export default function Navbar() {
 
             {isAuthenticated ? (
               <>
-                <NavLink to="/dashboard">Dashboard</NavLink>
                 <NavLink to="/orders">Orders</NavLink>
                 <NavLink to="/profile">Profile</NavLink>
                 <button className="mobile-nav-action" type="button" onClick={handleLogout}>
