@@ -3749,12 +3749,12 @@ body {
 
 .feature-category-card {
   position: relative;
-  min-height: 190px;
-  height: 190px;
+  min-height: 273px;
+  height: 273px;
   display: grid;
   grid-template-columns: 1fr 105px;
   gap: 0.75rem;
-  align-items: end;
+  align-items: center;
   padding: 1rem;
   border: 1px solid var(--border);
   border-radius: 8px;
