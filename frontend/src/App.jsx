@@ -17,8 +17,10 @@ import OrdersPage from "./pages/OrdersPage";
 import ProfilePage from "./pages/ProfilePage";
 import ContactPage from "./pages/ContactPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import WishlistPage from "./pages/WishlistPage";
 import { fetchCurrentUser, markAuthReady } from "./store/slices/authSlice";
 import { fetchCart } from "./store/slices/cartSlice";
+import { fetchWishlist } from "./store/slices/wishlistSlice";
 import { hasStoredTokens } from "./utils/storage";
 
 function App() {
@@ -36,6 +38,7 @@ function App() {
   useEffect(() => {
     if (isAuthenticated) {
       dispatch(fetchCart());
+      dispatch(fetchWishlist());
     }
   }, [dispatch, isAuthenticated]);
 
@@ -54,6 +57,14 @@ function App() {
         <Route path="products" element={<ProductsPage />} />
         <Route path="products/:productId" element={<ProductDetailsPage />} />
         <Route path="cart" element={<CartPage />} />
+        <Route
+          path="wishlist"
+          element={
+            <ProtectedRoute>
+              <WishlistPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="checkout"
           element={

@@ -6,6 +6,10 @@ import Button from "./Button";
 import { BACKEND_BASE_URL } from "../api/apiClient";
 import { logout } from "../store/slices/authSlice";
 import { clearCartState } from "../store/slices/cartSlice";
+import {
+  clearWishlistState,
+  selectWishlistCount,
+} from "../store/slices/wishlistSlice";
 
 const publicLinks = [
   { label: "Products", to: "/products" },
@@ -21,6 +25,7 @@ export default function Navbar() {
   const [search, setSearch] = useState("");
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const cart = useSelector((state) => state.cart.cart);
+  const wishlistCount = useSelector(selectWishlistCount);
 
   useEffect(() => {
     setMobileOpen(false);
@@ -29,6 +34,7 @@ export default function Navbar() {
   const handleLogout = () => {
     dispatch(logout());
     dispatch(clearCartState());
+    dispatch(clearWishlistState());
     navigate("/");
   };
 
@@ -81,6 +87,11 @@ export default function Navbar() {
             <span>{cart.total_items || 0} items</span>
           </Link>
 
+          <Link className="header-action-link wishlist-header-link" to="/wishlist">
+            <strong>Wishlist</strong>
+            <span>{wishlistCount} saved</span>
+          </Link>
+
           {isAuthenticated ? (
             <>
               <Link className="header-action-link account-link" to="/profile">
@@ -122,6 +133,8 @@ export default function Navbar() {
                 {link.label}
               </NavLink>
             ))}
+
+            <NavLink to="/wishlist">Wishlist</NavLink>
 
             {isAuthenticated ? (
               <>

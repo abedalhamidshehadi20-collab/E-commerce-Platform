@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Button from "./Button";
 import { addItemToCart } from "../store/slices/cartSlice";
 import { formatCurrency } from "../utils/formatters";
+import WishlistButton from "./WishlistButton";
 
 function getPlaceholderLabel(name = "Catalog") {
   return name
@@ -35,13 +36,16 @@ export default function ProductCard({ product }) {
 
   return (
     <article className="product-card">
-      <Link className="product-card-media" to={`/products/${product.id}`}>
-        {product.primary_image ? (
-          <img src={product.primary_image} alt={product.name} />
-        ) : (
-          <div className="product-card-placeholder">{getPlaceholderLabel(product.name)}</div>
-        )}
-      </Link>
+      <div className="product-card-media-shell">
+        <Link className="product-card-media" to={`/products/${product.id}`}>
+          {product.primary_image ? (
+            <img src={product.primary_image} alt={product.name} />
+          ) : (
+            <div className="product-card-placeholder">{getPlaceholderLabel(product.name)}</div>
+          )}
+        </Link>
+        <WishlistButton product={product} className="product-card-wishlist" />
+      </div>
 
       <div className="product-card-body">
         <div className="product-card-meta">

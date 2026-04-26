@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import Button from "../components/Button";
 import LoadingSpinner from "../components/LoadingSpinner";
+import WishlistButton from "../components/WishlistButton";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { addItemToCart } from "../store/slices/cartSlice";
 import { fetchProductDetails } from "../store/slices/productsSlice";
@@ -96,6 +97,9 @@ export default function ProductDetailsPage() {
           <p className="product-price">{formatCurrency(selectedProduct.price)}</p>
           <p className="product-stock-status">{selectedProduct.stock_status}</p>
           <p className="product-description">{selectedProduct.description}</p>
+          <div className="detail-secondary-actions">
+            <WishlistButton product={selectedProduct} showLabel />
+          </div>
 
           <div className="detail-purchase-card">
             <div className="field-row align-end">
