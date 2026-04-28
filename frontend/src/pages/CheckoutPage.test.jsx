@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 
 import authReducer from "../store/slices/authSlice";
 import cartReducer from "../store/slices/cartSlice";
+import couponsReducer from "../store/slices/couponsSlice";
 import ordersReducer from "../store/slices/ordersSlice";
 import CheckoutPage from "./CheckoutPage";
 
@@ -21,12 +22,21 @@ const mockOrdersApi = vi.hoisted(() => ({
   getOrderById: vi.fn(),
 }));
 
+const mockCouponsApi = vi.hoisted(() => ({
+  getCoupons: vi.fn(),
+  applyCoupon: vi.fn(),
+}));
+
 vi.mock("../api/authApi", () => ({
   default: mockAuthApi,
 }));
 
 vi.mock("../api/ordersApi", () => ({
   default: mockOrdersApi,
+}));
+
+vi.mock("../api/couponsApi", () => ({
+  default: mockCouponsApi,
 }));
 
 const savedAddresses = [
@@ -42,6 +52,22 @@ const savedAddresses = [
     postal_code: "02118",
     country: "United States",
     is_default: true,
+  },
+];
+
+const availableCoupons = [
+  {
+    id: 1,
+    code: "SAVE20",
+    discount_type: "percent",
+    discount_value: "20.00",
+    discount_label: "20% OFF",
+    expires_at: "2026-07-25T10:00:00Z",
+    used: false,
+    used_at: null,
+    is_expired: false,
+    status: "Available",
+    created_at: "2026-04-26T10:00:00Z",
   },
 ];
 
@@ -75,6 +101,7 @@ function renderCheckoutPage({
     reducer: {
       auth: authReducer,
       cart: cartReducer,
+      coupons: couponsReducer,
       orders: ordersReducer,
     },
     preloadedState: {
@@ -121,6 +148,14 @@ function renderCheckoutPage({
         error: "",
         ...cartState,
       },
+      coupons: {
+        list: availableCoupons,
+        loading: false,
+        applyLoading: false,
+        error: "",
+        applyError: "",
+        appliedCoupon: null,
+      },
       orders: {
         list: [],
         selectedOrder: null,
@@ -148,6 +183,8 @@ function renderCheckoutPage({
 
 beforeEach(() => {
   mockAuthApi.getAddresses.mockResolvedValue({ data: savedAddresses });
+  mockCouponsApi.getCoupons.mockResolvedValue({ data: availableCoupons });
+  mockCouponsApi.applyCoupon.mockReset();
   mockOrdersApi.getOrders.mockResolvedValue({ data: { results: [] } });
   mockOrdersApi.getOrderById.mockResolvedValue({ data: baseOrder });
   mockOrdersApi.checkout.mockReset();
@@ -190,7 +227,48 @@ it("places a COD order successfully", async () => {
     payment_method: "cod",
     address_id: 1,
     notes: "",
+    coupon_code: "",
   });
+});
+
+it("applies a welcome coupon and includes it in COD checkout", async () => {
+  const user = userEvent.setup();
+  mockCouponsApi.applyCoupon.mockResolvedValue({
+    data: {
+      code: "SAVE20",
+      discount: "24.00",
+      final_price: "96.00",
+    },
+  });
+  mockOrdersApi.checkout.mockResolvedValue({
+    data: {
+      ...baseOrder,
+      coupon_code: "SAVE20",
+      discount_amount: "24.00",
+      total_price: "96.00",
+    },
+  });
+
+  renderCheckoutPage();
+
+  await user.type(screen.getByLabelText(/coupon code/i), "SAVE20");
+  await user.click(screen.getByRole("button", { name: /^apply$/i }));
+
+  expect(await screen.findByText(/save20 applied\. you saved \$24\.00\./i)).toBeInTheDocument();
+  expect(mockCouponsApi.applyCoupon).toHaveBeenCalledWith({
+    code: "SAVE20",
+    cart_total: "120.00",
+  });
+
+  await user.click(screen.getByRole("button", { name: /^place order$/i }));
+
+  expect(mockOrdersApi.checkout).toHaveBeenCalledWith({
+    payment_method: "cod",
+    address_id: 1,
+    notes: "",
+    coupon_code: "SAVE20",
+  });
+  expect(await screen.findByText(/order placed successfully/i)).toBeInTheDocument();
 });
 
 it("shows a declined mock card payment without creating an order", async () => {

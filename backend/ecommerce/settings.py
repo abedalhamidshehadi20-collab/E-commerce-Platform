@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "django_filters",
     "apps.users.apps.UsersConfig",
+    "apps.coupons.apps.CouponsConfig",
     "apps.products.apps.ProductsConfig",
     "apps.cart.apps.CartConfig",
     "apps.wishlist.apps.WishlistConfig",

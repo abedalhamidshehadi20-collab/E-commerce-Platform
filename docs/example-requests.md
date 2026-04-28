@@ -97,6 +97,7 @@ curl -X POST http://127.0.0.1:8000/api/orders/checkout \
   -H "Content-Type: application/json" \
   -d '{
     "address_id": 5,
+    "coupon_code": "SAVE20",
     "notes": "Leave at the front desk"
   }'
 ```
@@ -118,8 +119,28 @@ curl -X POST http://127.0.0.1:8000/api/orders/checkout \
     "country": "United States",
     "save_address": true,
     "label": "Office",
+    "coupon_code": "SAVE20",
     "notes": "Ring the bell"
   }'
+```
+
+## Apply Coupon
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/coupons/apply/ \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "code": "SAVE20",
+    "cart_total": 120
+  }'
+```
+
+## List Coupons
+
+```bash
+curl http://127.0.0.1:8000/api/coupons/ \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
 ## Get Orders

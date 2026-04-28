@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import LoadingSpinner from "../components/LoadingSpinner";
 import StatusBadge from "../components/StatusBadge";
 import useDocumentTitle from "../hooks/useDocumentTitle";
+import { fetchCoupons } from "../store/slices/couponsSlice";
 import { fetchOrders } from "../store/slices/ordersSlice";
 import { formatCurrency, formatDate } from "../utils/formatters";
 
@@ -14,9 +15,14 @@ export default function DashboardPage() {
   const { user } = useSelector((state) => state.auth);
   const { cart } = useSelector((state) => state.cart);
   const { list, loading } = useSelector((state) => state.orders);
+  const { list: coupons, loading: couponsLoading, error: couponsError } = useSelector(
+    (state) => state.coupons
+  );
+  const availableCoupons = coupons.filter((coupon) => coupon.status === "Available");
 
   useEffect(() => {
     dispatch(fetchOrders());
+    dispatch(fetchCoupons());
   }, [dispatch]);
 
   return (
@@ -43,6 +49,11 @@ export default function DashboardPage() {
           <span className="dashboard-stat-label">Total orders</span>
           <strong>{list.length}</strong>
           <p>Your complete purchase history in one place.</p>
+        </div>
+        <div className="stat-card dashboard-stat-card">
+          <span className="dashboard-stat-label">Available coupons</span>
+          <strong>{availableCoupons.length}</strong>
+          <p>Rewards ready to use before they expire.</p>
         </div>
       </div>
 
@@ -88,6 +99,31 @@ export default function DashboardPage() {
             <Link className="action-link-card dashboard-action-link" to="/cart">
               Review cart
             </Link>
+          </div>
+        </div>
+
+        <div className="panel-card dashboard-panel">
+          <div className="panel-card-header dashboard-panel-header">
+            <h3>My coupons</h3>
+          </div>
+          {couponsLoading ? <LoadingSpinner label="Loading coupons..." /> : null}
+          {!couponsLoading && couponsError ? <p className="page-error">{couponsError}</p> : null}
+          {!couponsLoading && !coupons.length ? (
+            <p className="supporting-text">Your account rewards will appear here.</p>
+          ) : null}
+          <div className="dashboard-coupon-list">
+            {coupons.map((coupon) => (
+              <div className="dashboard-coupon-card" key={coupon.id}>
+                <div className="dashboard-coupon-top">
+                  <strong>{coupon.code}</strong>
+                  <span className={`dashboard-coupon-status ${coupon.status.toLowerCase()}`}>
+                    {coupon.status}
+                  </span>
+                </div>
+                <p>{coupon.discount_label}</p>
+                <small>Expires {formatDate(coupon.expires_at)}</small>
+              </div>
+            ))}
           </div>
         </div>
       </div>

@@ -10,6 +10,11 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from apps.cart.models import Cart, CartItem
+from apps.coupons.services import (
+    mark_coupon_used,
+    normalize_coupon_code,
+    validate_coupon_for_user,
+)
 from apps.products.models import Product
 from apps.users.models import Address
 
@@ -31,14 +36,25 @@ class CheckoutSnapshot:
     cart_items: list
     cart_snapshot: list
     subtotal: Decimal
+    discount_amount: Decimal
     shipping_cost: Decimal
     total_price: Decimal
+    coupon: object = None
+    coupon_code: str = ""
 
 
-class InventoryConflictError(Exception):
+class CheckoutFinalizationError(Exception):
     def __init__(self, public_message):
         super().__init__(public_message)
         self.public_message = public_message
+
+
+class InventoryConflictError(CheckoutFinalizationError):
+    pass
+
+
+class CouponConflictError(CheckoutFinalizationError):
+    pass
 
 
 def _serialize_signature(payload):
@@ -81,8 +97,10 @@ def _build_shipping_snapshot(user, payload):
     }
 
 
-def _build_cart_snapshot(user):
+def _build_cart_snapshot(user, coupon_code="", lock_cart=False):
     cart, _ = Cart.objects.get_or_create(user=user)
+    if lock_cart:
+        cart = Cart.objects.select_for_update().get(pk=cart.pk)
     cart_items = list(CartItem.objects.select_related("product").filter(cart=cart))
 
     if not cart_items:
@@ -115,13 +133,27 @@ def _build_cart_snapshot(user):
         )
 
     shipping_cost = ZERO_DECIMAL
+    normalized_coupon_code = normalize_coupon_code(coupon_code)
+    discount_amount = ZERO_DECIMAL
+    total_price = subtotal + shipping_cost
+    coupon = None
+
+    if normalized_coupon_code:
+        coupon_result = validate_coupon_for_user(user, normalized_coupon_code, total_price)
+        coupon = coupon_result.coupon
+        discount_amount = coupon_result.discount
+        total_price = coupon_result.final_price
+
     return CheckoutSnapshot(
         cart=cart,
         cart_items=cart_items,
         cart_snapshot=cart_snapshot,
         subtotal=subtotal,
+        discount_amount=discount_amount,
         shipping_cost=shipping_cost,
-        total_price=subtotal + shipping_cost,
+        total_price=total_price,
+        coupon=coupon,
+        coupon_code=normalized_coupon_code,
     )
 
 
@@ -175,6 +207,9 @@ def _create_order_from_snapshot(
     user,
     shipping_snapshot,
     cart_snapshot,
+    coupon=None,
+    coupon_code="",
+    discount_amount=ZERO_DECIMAL,
     payment_method,
     payment_status,
     transaction_reference="",
@@ -200,6 +235,9 @@ def _create_order_from_snapshot(
         shipping_postal_code=shipping_snapshot["postal_code"],
         shipping_country=shipping_snapshot["country"],
         notes=shipping_snapshot.get("notes", ""),
+        coupon=coupon,
+        coupon_code=coupon_code,
+        discount_amount=discount_amount,
         shipping_cost=ZERO_DECIMAL,
         payment_initiated_at=payment_initiated_at,
         paid_at=paid_at,
@@ -228,8 +266,13 @@ def _create_order_from_snapshot(
 
     OrderItem.objects.bulk_create(order_items)
     order.subtotal = subtotal
-    order.total_price = subtotal + order.shipping_cost
-    order.save(update_fields=["subtotal", "total_price", "updated_at"])
+    order.total_price = max(
+        subtotal + order.shipping_cost - order.discount_amount,
+        ZERO_DECIMAL,
+    )
+    order.save(
+        update_fields=["subtotal", "discount_amount", "total_price", "updated_at"]
+    )
     return order
 
 
@@ -282,6 +325,8 @@ def _serialize_payment_session(session, *, client_secret="", publishable_key="")
         "provider": session.provider,
         "status": session.status,
         "amount": str(session.total_price),
+        "coupon_code": session.coupon_code,
+        "discount_amount": str(session.discount_amount),
         "currency": session.currency,
         "client_secret": client_secret or "",
         "publishable_key": publishable_key or "",
@@ -306,6 +351,8 @@ def _serialize_payment_confirmation(session, order=None):
         "checkout_session_id": str(session.public_id),
         "provider": session.provider,
         "status": session.status,
+        "coupon_code": session.coupon_code,
+        "discount_amount": str(session.discount_amount),
         "message": message,
         "order": order,
     }
@@ -313,53 +360,56 @@ def _serialize_payment_confirmation(session, order=None):
 
 @transaction.atomic
 def create_order_from_cart(user, payload):
-    cart, _ = Cart.objects.select_for_update().get_or_create(user=user)
-    cart_items = list(CartItem.objects.select_related("product").filter(cart=cart))
-
-    if not cart_items:
-        raise serializers.ValidationError("Your cart is empty.")
-
+    checkout_snapshot = _build_cart_snapshot(
+        user,
+        payload.get("coupon_code", ""),
+        lock_cart=True,
+    )
+    cart = checkout_snapshot.cart
     shipping_snapshot = _build_shipping_snapshot(user, payload)
-    cart_snapshot = []
-    for item in cart_items:
-        product = item.product
-        if item.quantity > product.stock:
-            raise serializers.ValidationError(
-                {
-                    "stock": (
-                        f"Only {product.stock} item(s) available for "
-                        f"'{product.name}'."
-                    )
-                }
-            )
+    locked_coupon = None
 
-        cart_snapshot.append(
-            {
-                "product_id": product.id,
-                "product_name": product.name,
-                "quantity": item.quantity,
-                "unit_price": str(product.price),
-                "line_total": str(product.price * item.quantity),
-            }
+    if checkout_snapshot.coupon is not None:
+        locked_coupon = (
+            checkout_snapshot.coupon.__class__.objects.select_for_update()
+            .filter(pk=checkout_snapshot.coupon.pk, user=user)
+            .first()
         )
+        if locked_coupon is None:
+            raise serializers.ValidationError(
+                {"code": "Coupon not found for this account."}
+            )
+        if locked_coupon.used:
+            raise serializers.ValidationError(
+                {"code": "This coupon has already been used."}
+            )
+        if locked_coupon.is_expired:
+            raise serializers.ValidationError({"code": "This coupon has expired."})
 
     order = _create_order_from_snapshot(
         user=user,
         shipping_snapshot=shipping_snapshot,
-        cart_snapshot=cart_snapshot,
+        cart_snapshot=checkout_snapshot.cart_snapshot,
+        coupon=locked_coupon,
+        coupon_code=checkout_snapshot.coupon_code,
+        discount_amount=checkout_snapshot.discount_amount,
         payment_method=Order.PaymentMethod.COD,
         payment_status=Order.PaymentStatus.UNPAID,
     )
     CartItem.objects.filter(cart=cart).delete()
+    if locked_coupon is not None:
+        mark_coupon_used(locked_coupon)
     return order
 
 
 def create_card_payment_session(user, payload):
-    checkout_snapshot = _build_cart_snapshot(user)
+    checkout_snapshot = _build_cart_snapshot(user, payload.get("coupon_code", ""))
     shipping_snapshot = _build_shipping_snapshot(user, payload)
     gateway = get_payment_gateway()
     cart_signature = _serialize_signature(
         {
+            "coupon_code": checkout_snapshot.coupon_code,
+            "discount_amount": str(checkout_snapshot.discount_amount),
             "currency": settings.PAYMENT_CURRENCY,
             "items": checkout_snapshot.cart_snapshot,
             "total_price": str(checkout_snapshot.total_price),
@@ -413,7 +463,10 @@ def create_card_payment_session(user, payload):
             shipping_signature=shipping_signature,
             shipping_snapshot=shipping_snapshot,
             cart_snapshot=checkout_snapshot.cart_snapshot,
+            coupon=checkout_snapshot.coupon,
+            coupon_code=checkout_snapshot.coupon_code,
             subtotal=checkout_snapshot.subtotal,
+            discount_amount=checkout_snapshot.discount_amount,
             shipping_cost=checkout_snapshot.shipping_cost,
             total_price=checkout_snapshot.total_price,
             expires_at=timezone.now()
@@ -453,17 +506,36 @@ def create_card_payment_session(user, payload):
 def finalize_checkout_session(payment_session):
     session = (
         CheckoutSession.objects.select_for_update()
-        .select_related("order")
+        .select_related("order", "coupon")
         .get(pk=payment_session.pk)
     )
     if session.order_id:
         return session.order
+
+    locked_coupon = None
+    if session.coupon_id:
+        locked_coupon = (
+            session.coupon.__class__.objects.select_for_update()
+            .filter(pk=session.coupon_id, user=session.user)
+            .first()
+        )
+        if locked_coupon is None:
+            raise CouponConflictError("This coupon is no longer available.")
+        if locked_coupon.used:
+            raise CouponConflictError("This coupon has already been used.")
+        if locked_coupon.is_expired:
+            raise CouponConflictError(
+                "This coupon expired before checkout was completed."
+            )
 
     cart = Cart.objects.select_for_update().filter(user=session.user).first()
     order = _create_order_from_snapshot(
         user=session.user,
         shipping_snapshot=session.shipping_snapshot,
         cart_snapshot=session.cart_snapshot,
+        coupon=locked_coupon,
+        coupon_code=session.coupon_code,
+        discount_amount=session.discount_amount,
         payment_method=Order.PaymentMethod.CARD,
         payment_status=Order.PaymentStatus.PAID,
         transaction_reference=session.provider_payment_id,
@@ -473,6 +545,8 @@ def finalize_checkout_session(payment_session):
 
     if cart is not None:
         _clear_cart_by_snapshot(cart, session.cart_snapshot)
+    if locked_coupon is not None:
+        mark_coupon_used(locked_coupon)
 
     session.order = order
     session.status = CheckoutSession.Status.COMPLETED
@@ -537,7 +611,7 @@ def confirm_card_payment_session(user, checkout_session_id, simulate_result=""):
     if payment_session.status == CheckoutSession.Status.SUCCEEDED:
         try:
             order = finalize_checkout_session(payment_session)
-        except InventoryConflictError as exc:
+        except CheckoutFinalizationError as exc:
             payment_session = _handle_finalization_failure(payment_session, exc)
             return _serialize_payment_confirmation(payment_session)
         payment_session.refresh_from_db()
@@ -581,6 +655,6 @@ def sync_card_payment_session_from_provider(
 
     try:
         finalize_checkout_session(payment_session)
-    except InventoryConflictError as exc:
+    except CheckoutFinalizationError as exc:
         _handle_finalization_failure(payment_session, exc)
     return payment_session

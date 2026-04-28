@@ -30,6 +30,8 @@ class OrderListSerializer(serializers.ModelSerializer):
             "status",
             "payment_method",
             "payment_status",
+            "coupon_code",
+            "discount_amount",
             "total_price",
             "items_count",
             "paid_at",
@@ -61,7 +63,9 @@ class OrderDetailSerializer(serializers.ModelSerializer):
             "shipping_postal_code",
             "shipping_country",
             "notes",
+            "coupon_code",
             "subtotal",
+            "discount_amount",
             "shipping_cost",
             "total_price",
             "payment_initiated_at",
@@ -89,6 +93,7 @@ class BaseCheckoutSerializer(serializers.Serializer):
     save_address = serializers.BooleanField(required=False, default=False)
     label = serializers.CharField(required=False, allow_blank=True, default="")
     notes = serializers.CharField(required=False, allow_blank=True, default="")
+    coupon_code = serializers.CharField(required=False, allow_blank=True, default="")
 
     def validate(self, attrs):
         user = self.context["request"].user

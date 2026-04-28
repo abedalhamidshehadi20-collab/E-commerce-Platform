@@ -64,7 +64,20 @@ class Order(models.Model):
     shipping_postal_code = models.CharField(max_length=20)
     shipping_country = models.CharField(max_length=120)
     notes = models.TextField(blank=True)
+    coupon = models.ForeignKey(
+        "coupons.Coupon",
+        on_delete=models.SET_NULL,
+        related_name="orders",
+        null=True,
+        blank=True,
+    )
+    coupon_code = models.CharField(max_length=50, blank=True)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal("0.00"))
+    discount_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal("0.00"),
+    )
     shipping_cost = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal("0.00"))
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal("0.00"))
     payment_initiated_at = models.DateTimeField(null=True, blank=True)
@@ -77,6 +90,10 @@ class Order(models.Model):
         ordering = ("-created_at",)
         constraints = [
             models.CheckConstraint(check=Q(subtotal__gte=0), name="orders_subtotal_non_negative"),
+            models.CheckConstraint(
+                check=Q(discount_amount__gte=0),
+                name="orders_discount_non_negative",
+            ),
             models.CheckConstraint(
                 check=Q(total_price__gte=0), name="orders_total_non_negative"
             ),
@@ -171,7 +188,20 @@ class CheckoutSession(models.Model):
     shipping_signature = models.CharField(max_length=64)
     shipping_snapshot = models.JSONField(default=dict)
     cart_snapshot = models.JSONField(default=list)
+    coupon = models.ForeignKey(
+        "coupons.Coupon",
+        on_delete=models.SET_NULL,
+        related_name="checkout_sessions",
+        null=True,
+        blank=True,
+    )
+    coupon_code = models.CharField(max_length=50, blank=True)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal("0.00"))
+    discount_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal("0.00"),
+    )
     shipping_cost = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal("0.00"))
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal("0.00"))
     provider_payment_id = models.CharField(max_length=255, blank=True)
@@ -190,6 +220,10 @@ class CheckoutSession(models.Model):
             models.CheckConstraint(
                 check=Q(subtotal__gte=0),
                 name="checkout_session_subtotal_non_negative",
+            ),
+            models.CheckConstraint(
+                check=Q(discount_amount__gte=0),
+                name="checkout_session_discount_non_negative",
             ),
             models.CheckConstraint(
                 check=Q(total_price__gte=0),

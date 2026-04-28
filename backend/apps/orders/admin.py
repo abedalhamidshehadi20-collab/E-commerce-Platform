@@ -17,10 +17,11 @@ class OrderAdmin(admin.ModelAdmin):
         "status",
         "payment_method",
         "payment_status",
+        "coupon_code",
         "total_price",
         "created_at",
     )
-    list_filter = ("status", "payment_method", "payment_status", "created_at")
+    list_filter = ("status", "payment_method", "payment_status", "coupon_code", "created_at")
     search_fields = (
         "order_number",
         "transaction_reference",
@@ -28,6 +29,9 @@ class OrderAdmin(admin.ModelAdmin):
         "shipping_full_name",
     )
     readonly_fields = (
+        "coupon",
+        "coupon_code",
+        "discount_amount",
         "subtotal",
         "total_price",
         "transaction_reference",
@@ -52,6 +56,7 @@ class CheckoutSessionAdmin(admin.ModelAdmin):
         "user",
         "provider",
         "status",
+        "coupon_code",
         "total_price",
         "provider_payment_id",
         "created_at",
@@ -64,6 +69,9 @@ class CheckoutSessionAdmin(admin.ModelAdmin):
         "shipping_signature",
         "shipping_snapshot",
         "cart_snapshot",
+        "coupon",
+        "coupon_code",
+        "discount_amount",
         "provider_payment_id",
         "last_error_code",
         "last_error_message",

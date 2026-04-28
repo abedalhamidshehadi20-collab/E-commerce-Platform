@@ -4,12 +4,15 @@ import { useDispatch, useSelector } from "react-redux";
 
 import Button from "../components/Button";
 import CheckoutPaymentMethodSelector from "../components/CheckoutPaymentMethodSelector";
+import CouponInput from "../components/CouponInput";
 import EmptyState from "../components/EmptyState";
 import Input from "../components/Input";
 import Modal from "../components/Modal";
 import MockCardPaymentForm from "../components/MockCardPaymentForm";
+import OrderSummary from "../components/OrderSummary";
 import StripeCheckoutForm from "../components/StripeCheckoutForm";
 import useDocumentTitle from "../hooks/useDocumentTitle";
+import { applyCoupon, clearAppliedCoupon, fetchCoupons } from "../store/slices/couponsSlice";
 import { fetchAddresses } from "../store/slices/authSlice";
 import { clearCartState } from "../store/slices/cartSlice";
 import {
@@ -38,12 +41,13 @@ const blankForm = {
   notes: "",
 };
 
-function buildCheckoutPayload(form, user) {
+function buildCheckoutPayload(form, user, couponCode = "") {
   if (form.addressMode === "saved" && form.address_id) {
     return {
       payment_method: form.payment_method,
       address_id: Number(form.address_id),
       notes: form.notes,
+      coupon_code: couponCode,
     };
   }
 
@@ -60,6 +64,7 @@ function buildCheckoutPayload(form, user) {
     save_address: form.save_address,
     label: form.label,
     notes: form.notes,
+    coupon_code: couponCode,
   };
 }
 
@@ -108,6 +113,13 @@ export default function CheckoutPage() {
   );
   const { cart } = useSelector((state) => state.cart);
   const {
+    list: coupons,
+    loading: couponsLoading,
+    applyLoading,
+    applyError,
+    appliedCoupon,
+  } = useSelector((state) => state.coupons);
+  const {
     checkoutLoading,
     selectedOrder,
     error,
@@ -126,6 +138,7 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     dispatch(fetchAddresses());
+    dispatch(fetchCoupons());
   }, [dispatch]);
 
   useEffect(() => {
@@ -162,6 +175,8 @@ export default function CheckoutPage() {
 
         if (response.order) {
           dispatch(clearCartState());
+          dispatch(clearAppliedCoupon());
+          dispatch(fetchCoupons());
           dispatch(fetchOrders());
           dispatch(fetchAddresses());
           setCheckoutSuccess(true);
@@ -201,7 +216,15 @@ export default function CheckoutPage() {
     }
   }, [addressesError, error, fieldErrors, localError, paymentError]);
 
-  const orderTotal = useMemo(() => formatCurrency(cart.subtotal), [cart.subtotal]);
+  const discountAmount = useMemo(
+    () => Number(appliedCoupon?.discount || 0),
+    [appliedCoupon?.discount]
+  );
+  const finalTotal = useMemo(
+    () => Number(appliedCoupon?.final_price ?? cart.subtotal ?? 0),
+    [appliedCoupon?.final_price, cart.subtotal]
+  );
+  const orderTotal = useMemo(() => formatCurrency(finalTotal), [finalTotal]);
   const selectedSavedAddress = useMemo(
     () => addresses.find((address) => String(address.id) === form.address_id) || null,
     [addresses, form.address_id]
@@ -243,9 +266,28 @@ export default function CheckoutPage() {
 
   const handleSuccessfulOrder = () => {
     dispatch(clearCartState());
+    dispatch(clearAppliedCoupon());
+    dispatch(fetchCoupons());
     dispatch(fetchOrders());
     dispatch(fetchAddresses());
     setCheckoutSuccess(true);
+  };
+
+  const handleApplyCoupon = async (code) => {
+    invalidatePaymentState();
+    setStatusMessage("");
+    setLocalError("");
+    return dispatch(
+      applyCoupon({
+        code,
+        cart_total: cart.subtotal,
+      })
+    ).unwrap();
+  };
+
+  const handleClearCoupon = () => {
+    dispatch(clearAppliedCoupon());
+    invalidatePaymentState();
   };
 
   const handleCreateCardSession = async (payload) => {
@@ -327,7 +369,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    const payload = buildCheckoutPayload(form, user);
+    const payload = buildCheckoutPayload(form, user, appliedCoupon?.code || "");
 
     try {
       if (form.payment_method === "cod") {
@@ -551,37 +593,26 @@ export default function CheckoutPage() {
           ) : null}
         </form>
 
-        <aside className="summary-card checkout-summary-card">
-          <div className="checkout-summary-header">
-            <h3>Order summary</h3>
-            <span className="checkout-summary-count">
-              {cart.total_items} {cart.total_items === 1 ? "item" : "items"}
-            </span>
-          </div>
-
-          <div className="checkout-summary-items">
-            {cart.items.map((item) => (
-              <div key={item.id} className="summary-item checkout-summary-item">
-                <span>
-                  {item.product.name} x {item.quantity}
-                </span>
-                <strong>{formatCurrency(item.line_total)}</strong>
-              </div>
-            ))}
-          </div>
-
-          <div className="summary-row checkout-summary-row">
-            <span>Payment method</span>
-            <span className={`checkout-payment-chip ${form.payment_method === "cod" ? "cod" : "card"}`}>
-              {form.payment_method === "cod" ? "Cash on Delivery" : "Card Payment"}
-            </span>
-          </div>
-
-          <div className="summary-row checkout-summary-row checkout-summary-total">
-            <span>Total</span>
-            <strong>{orderTotal}</strong>
-          </div>
-        </aside>
+        <OrderSummary
+          items={cart.items}
+          totalItems={cart.total_items}
+          paymentMethod={form.payment_method}
+          subtotal={cart.subtotal}
+          discount={discountAmount}
+          finalTotal={finalTotal}
+          couponCode={appliedCoupon?.code || ""}
+        >
+          <CouponInput
+            availableCoupons={coupons}
+            cartTotal={cart.subtotal}
+            appliedCoupon={appliedCoupon}
+            couponsLoading={couponsLoading}
+            loading={applyLoading}
+            error={applyError}
+            onApply={handleApplyCoupon}
+            onClear={handleClearCoupon}
+          />
+        </OrderSummary>
       </div>
 
       <Modal

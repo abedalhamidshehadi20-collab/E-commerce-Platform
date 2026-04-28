@@ -179,6 +179,16 @@ export default function OrdersPage() {
                             {formatCurrency(selectedOrder.shipping_cost)}
                           </strong>
                         </p>
+                        {Number(selectedOrder.discount_amount || 0) > 0 ? (
+                          <p className="orders-detail-row">
+                            <span className="orders-detail-label">
+                              Coupon{selectedOrder.coupon_code ? ` (${selectedOrder.coupon_code})` : ""}:
+                            </span>
+                            <strong className="orders-detail-value">
+                              -{formatCurrency(selectedOrder.discount_amount)}
+                            </strong>
+                          </p>
+                        ) : null}
                         <p className="orders-detail-row">
                           <span className="orders-detail-label">Total:</span>
                           <strong className="orders-detail-value">

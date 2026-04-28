@@ -49,11 +49,24 @@ Authentication required for all cart routes.
 Authentication required for all order routes.
 
 - `POST /orders/checkout`
-  Validates stock, creates an order, stores order items at purchase price, decreases inventory, and clears the cart.
+  Validates stock, optionally applies a user-owned coupon, creates an order, stores order items at purchase price, decreases inventory, and clears the cart.
+- `POST /orders/payment-sessions`
+  Initializes a secure card payment session and preserves any applied coupon discount in the final charge amount.
+- `POST /orders/payment-sessions/confirm`
+  Confirms a card payment session and finalizes the order.
 - `GET /orders`
   Paginated order history for the current user.
 - `GET /orders/:id`
   Detailed view of a single order.
+
+## Coupons
+
+Authentication required.
+
+- `GET /coupons/`
+  Returns coupons assigned to the authenticated user.
+- `POST /coupons/apply/`
+  Validates a coupon code for the authenticated user and returns the discount plus final total.
 
 ## Profile
 
@@ -81,6 +94,7 @@ Authentication required.
   - contact
 - Authenticated access:
   - cart
+  - coupons
   - checkout
   - orders
   - profile

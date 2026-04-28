@@ -1,9 +1,12 @@
+from decimal import Decimal
+
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from apps.cart.models import Cart, CartItem
+from apps.coupons.models import Coupon
 from apps.products.models import Category, Product
 from apps.users.models import Address
 from .models import CheckoutSession, Order
@@ -85,6 +88,27 @@ class CheckoutPaymentFlowTests(APITestCase):
         self.assertEqual(Order.objects.count(), 0)
         self.assertIn("Your cart is empty.", response.data["message"])
 
+    def test_cod_checkout_with_coupon_applies_discount_and_marks_coupon_used(self):
+        self._seed_cart()
+
+        response = self.client.post(
+            reverse("order-checkout"),
+            {
+                "payment_method": "cod",
+                "address_id": self.address.id,
+                "coupon_code": "SAVE20",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        order = Order.objects.get()
+        coupon = Coupon.objects.get(user=self.user, code="SAVE20")
+        self.assertEqual(order.coupon_code, "SAVE20")
+        self.assertEqual(order.discount_amount, Decimal("24.00"))
+        self.assertEqual(order.total_price, Decimal("96.00"))
+        self.assertTrue(coupon.used)
+
     def test_card_payment_confirmation_creates_paid_order(self):
         self._seed_cart()
 
@@ -151,6 +175,38 @@ class CheckoutPaymentFlowTests(APITestCase):
         self.assertTrue(CartItem.objects.filter(cart__user=self.user).exists())
         self.product.refresh_from_db()
         self.assertEqual(self.product.stock, 8)
+
+    def test_card_payment_with_coupon_marks_coupon_used_after_success(self):
+        self._seed_cart()
+
+        session_response = self.client.post(
+            reverse("order-payment-session-create"),
+            {
+                "payment_method": "card",
+                "address_id": self.address.id,
+                "coupon_code": "SAVE20",
+            },
+            format="json",
+        )
+        self.assertEqual(session_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(session_response.data["amount"], "96.00")
+
+        confirm_response = self.client.post(
+            reverse("order-payment-session-confirm"),
+            {
+                "checkout_session_id": session_response.data["checkout_session_id"],
+                "simulate_result": "succeeded",
+            },
+            format="json",
+        )
+
+        self.assertEqual(confirm_response.status_code, status.HTTP_200_OK)
+        order = Order.objects.get()
+        coupon = Coupon.objects.get(user=self.user, code="SAVE20")
+        self.assertEqual(order.coupon_code, "SAVE20")
+        self.assertEqual(order.discount_amount, Decimal("24.00"))
+        self.assertEqual(order.total_price, Decimal("96.00"))
+        self.assertTrue(coupon.used)
 
     def test_confirming_the_same_paid_session_twice_is_idempotent(self):
         self._seed_cart()
