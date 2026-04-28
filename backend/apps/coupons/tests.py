@@ -32,7 +32,35 @@ class CouponTests(APITestCase):
             self.user.date_joined + timedelta(days=90),
         )
 
+    def test_coupon_list_backfills_missing_welcome_coupon(self):
+        self.coupon.delete()
+        self.client.force_authenticate(self.user)
+
+        response = self.client.get(reverse("coupon-list"))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["code"], "SAVE20")
+
     def test_apply_coupon_endpoint_returns_discount_for_owner(self):
+        self.client.force_authenticate(self.user)
+
+        response = self.client.post(
+            reverse("coupon-apply"),
+            {
+                "code": "save20",
+                "cart_total": "120.00",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["code"], "SAVE20")
+        self.assertEqual(response.data["discount"], Decimal("24.00"))
+        self.assertEqual(response.data["final_price"], Decimal("96.00"))
+
+    def test_apply_coupon_endpoint_backfills_missing_welcome_coupon(self):
+        self.coupon.delete()
         self.client.force_authenticate(self.user)
 
         response = self.client.post(

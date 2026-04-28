@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 
 from .models import Coupon
 from .serializers import ApplyCouponSerializer, CouponSerializer
-from .services import validate_coupon_for_user
+from .services import ensure_welcome_coupon_for_user, validate_coupon_for_user
 
 
 class CouponListAPIView(generics.ListAPIView):
@@ -13,6 +13,7 @@ class CouponListAPIView(generics.ListAPIView):
     pagination_class = None
 
     def get_queryset(self):
+        ensure_welcome_coupon_for_user(self.request.user)
         return Coupon.objects.filter(user=self.request.user).order_by("used", "expires_at")
 
 

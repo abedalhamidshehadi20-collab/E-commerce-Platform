@@ -41,8 +41,19 @@ def _raise_coupon_error(message):
     raise serializers.ValidationError({"code": message})
 
 
+def ensure_welcome_coupon_for_user(user):
+    return Coupon.objects.get_or_create(
+        user=user,
+        code=WELCOME_COUPON_CODE,
+        defaults=get_welcome_coupon_defaults(user.date_joined),
+    )[0]
+
+
 def get_coupon_for_user(user, code):
     normalized_code = normalize_coupon_code(code)
+    if normalized_code == WELCOME_COUPON_CODE:
+        return ensure_welcome_coupon_for_user(user)
+
     try:
         return Coupon.objects.get(user=user, code=normalized_code)
     except Coupon.DoesNotExist as exc:
