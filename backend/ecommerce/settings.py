@@ -34,15 +34,20 @@ def build_database_config():
     database_url = os.getenv("DATABASE_URL")
     if database_url:
         parsed = urlparse(database_url)
-        return {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": parsed.path.lstrip("/"),
-            "USER": unquote(parsed.username or ""),
-            "PASSWORD": unquote(parsed.password or ""),
-            "HOST": parsed.hostname or "",
-            "PORT": parsed.port or "5432",
-            "OPTIONS": {"sslmode": os.getenv("PGSSLMODE", "require")},
-        }
+        # Ignore the sample placeholder URL from the repo so fresh clones
+        # still boot locally with SQLite until a real database is configured.
+        if parsed.hostname and parsed.hostname.endswith("your-project.supabase.co"):
+            database_url = None
+        else:
+            return {
+                "ENGINE": "django.db.backends.postgresql",
+                "NAME": parsed.path.lstrip("/"),
+                "USER": unquote(parsed.username or ""),
+                "PASSWORD": unquote(parsed.password or ""),
+                "HOST": parsed.hostname or "",
+                "PORT": parsed.port or "5432",
+                "OPTIONS": {"sslmode": os.getenv("PGSSLMODE", "require")},
+            }
 
     postgres_keys = ["DB_NAME", "DB_USER", "DB_PASSWORD", "DB_HOST"]
     if all(os.getenv(key) for key in postgres_keys):
