@@ -2902,7 +2902,8 @@ body {
 }
 
 .auth-actions {
-  padding-left: 0.2rem;
+  margin-left: calc(0.65rem * 0.6);
+  padding-left: 0;
 }
 
 .auth-actions .text-link {
