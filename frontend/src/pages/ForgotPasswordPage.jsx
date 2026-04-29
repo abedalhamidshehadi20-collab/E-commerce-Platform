@@ -21,6 +21,7 @@ export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [sentEmail, setSentEmail] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -31,8 +32,9 @@ export default function ForgotPasswordPage() {
       const response = await authApi.forgotPassword({ email });
       setSuccess(
         response.data?.message ||
-          "If an account with that email exists, a password reset link has been sent."
+          "If an account with that email exists, a password reset code has been sent."
       );
+      setSentEmail(email);
     } catch (requestError) {
       setError(getFormError(requestError));
     } finally {
@@ -46,7 +48,7 @@ export default function ForgotPasswordPage() {
         <span className="eyebrow">Account recovery</span>
         <h1>Reset your password securely.</h1>
         <p className="auth-supporting-copy">
-          Enter the email address linked to your account and we will send you a reset link.
+          Enter the email address linked to your account and we will send you a reset code.
         </p>
 
         <form onSubmit={handleSubmit}>
@@ -60,9 +62,18 @@ export default function ForgotPasswordPage() {
           {error ? <p className="page-error">{error}</p> : null}
           {success ? <p className="page-success">{success}</p> : null}
           <Button type="submit" className="stretch" loading={loading}>
-            Send reset link
+            Send reset code
           </Button>
         </form>
+
+        {sentEmail ? (
+          <p className="auth-footnote">
+            Already have a code?{" "}
+            <Link to={`/reset-password?email=${encodeURIComponent(sentEmail)}`}>
+              Enter it here
+            </Link>
+          </p>
+        ) : null}
 
         <p className="auth-footnote">
           Back to <Link to="/login">Sign in</Link>

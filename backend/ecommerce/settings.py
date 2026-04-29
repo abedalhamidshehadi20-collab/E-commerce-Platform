@@ -7,6 +7,20 @@ from urllib.parse import unquote, urlparse
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def load_env_file(path):
+    if not path.exists():
+        return
+    for line in path.read_text().splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            continue
+        key, value = stripped.split("=", 1)
+        os.environ.setdefault(key.strip(), value.strip().strip("\"").strip("'"))
+
+
+load_env_file(BASE_DIR / ".env")
+
+
 def env_bool(name, default=False):
     return os.getenv(name, str(default)).lower() in {"1", "true", "yes", "on"}
 
@@ -160,6 +174,28 @@ EMAIL_BACKEND = os.getenv(
     "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
 )
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "no-reply@ashstore.local")
+EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+
+if (
+    EMAIL_BACKEND == "django.core.mail.backends.console.EmailBackend"
+    and EMAIL_HOST_USER
+    and EMAIL_HOST_PASSWORD
+):
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+PASSWORD_RESET_CODE_TTL_MINUTES = int(
+    os.getenv("PASSWORD_RESET_CODE_TTL_MINUTES", "10")
+)
+PASSWORD_RESET_CODE_RESEND_SECONDS = int(
+    os.getenv("PASSWORD_RESET_CODE_RESEND_SECONDS", "60")
+)
+PASSWORD_RESET_CODE_MAX_PER_HOUR = int(
+    os.getenv("PASSWORD_RESET_CODE_MAX_PER_HOUR", "5")
+)
 
 ADMIN_SITE_HEADER = "E-commerce Platform Administration"
 ADMIN_SITE_TITLE = "E-commerce Admin"

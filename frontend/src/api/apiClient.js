@@ -33,7 +33,29 @@ function processQueue(error, token = null) {
   failedQueue = [];
 }
 
+const PUBLIC_ENDPOINTS = [
+  "/auth/register",
+  "/auth/login",
+  "/auth/refresh",
+  "/auth/password/forgot",
+  "/auth/password/reset",
+  "/products",
+  "/categories",
+  "/contact",
+];
+
+function isPublicRequest(url = "") {
+  return PUBLIC_ENDPOINTS.some((path) => url.startsWith(path));
+}
+
 apiClient.interceptors.request.use((config) => {
+  if (isPublicRequest(config.url || "")) {
+    if (config.headers?.Authorization) {
+      delete config.headers.Authorization;
+    }
+    return config;
+  }
+
   const token = getAccessToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -49,7 +71,8 @@ apiClient.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !originalRequest?._retry &&
-      getRefreshToken()
+      getRefreshToken() &&
+      !isPublicRequest(originalRequest?.url || "")
     ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
@@ -96,6 +119,7 @@ apiClient.interceptors.response.use(
 
 export function getApiErrorMessage(error) {
   return (
+    error?.response?.data?.error ||
     error?.response?.data?.message ||
     error?.response?.data?.detail ||
     error?.response?.data?.errors?.detail?.[0] ||

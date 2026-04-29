@@ -7,7 +7,9 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 
-const initialForm = {
+const blankForm = {
+  email: "",
+  code: "",
   new_password: "",
   confirm_password: "",
 };
@@ -26,7 +28,8 @@ export default function ResetPasswordPage() {
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [form, setForm] = useState(initialForm);
+  const emailParam = searchParams.get("email") || "";
+  const [form, setForm] = useState({ ...blankForm, email: emailParam });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -34,6 +37,10 @@ export default function ResetPasswordPage() {
   const uid = searchParams.get("uid") || "";
   const token = searchParams.get("token") || "";
   const isLinkValid = useMemo(() => Boolean(uid && token), [uid, token]);
+  const hasPartialLink = useMemo(
+    () => Boolean(uid || token) && !isLinkValid,
+    [uid, token, isLinkValid]
+  );
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -43,20 +50,33 @@ export default function ResetPasswordPage() {
       return;
     }
 
+    if (!isLinkValid) {
+      if (!form.email.trim()) {
+        setError("Email is required to verify the reset code.");
+        return;
+      }
+      if (!form.code.trim()) {
+        setError("Verification code is required.");
+        return;
+      }
+    }
+
     try {
       setLoading(true);
       setError("");
       setSuccess("");
       const response = await authApi.resetPassword({
-        uid,
-        token,
+        ...(isLinkValid
+          ? { uid, token }
+          : { email: form.email.trim(), code: form.code.trim() }),
         new_password: form.new_password,
         confirm_password: form.confirm_password,
       });
       setSuccess(
-        response.data?.message || "Password has been reset successfully. You can now sign in."
+        response.data?.message ||
+          "Password has been reset successfully. You can now sign in."
       );
-      setForm(initialForm);
+      setForm({ ...blankForm, email: form.email.trim() });
     } catch (requestError) {
       setError(getFormError(requestError));
     } finally {
@@ -64,7 +84,7 @@ export default function ResetPasswordPage() {
     }
   };
 
-  if (!isLinkValid) {
+  if (hasPartialLink) {
     return (
       <section className="container section narrow">
         <div className="auth-card">
@@ -87,10 +107,34 @@ export default function ResetPasswordPage() {
         <span className="eyebrow">Set a new password</span>
         <h1>Create a new password for your account.</h1>
         <p className="auth-supporting-copy">
-          Use at least 8 characters and choose a password that you have not used before.
+          {isLinkValid
+            ? "Use at least 8 characters and choose a password that you have not used before."
+            : "Enter the verification code you received by email, then choose a new password."}
         </p>
 
         <form onSubmit={handleSubmit}>
+          {!isLinkValid ? (
+            <>
+              <Input
+                label="Email"
+                type="email"
+                value={form.email}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, email: event.target.value }))
+                }
+                required
+              />
+              <Input
+                label="Verification code"
+                value={form.code}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, code: event.target.value }))
+                }
+                required
+              />
+            </>
+          ) : null}
+
           <Input
             label="New password"
             type="password"

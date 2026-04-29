@@ -10,6 +10,12 @@ All API routes are prefixed with `/api`.
   Returns access and refresh tokens for an existing user.
 - `POST /auth/refresh`
   Refreshes the access token.
+- `POST /auth/password/forgot`
+  Sends a password reset email with a verification code.
+- `POST /auth/password/reset`
+  Resets the password using the reset link credentials or email + verification code.
+- `GET /test-email`
+  Sends a test email (admin only).
 - `GET /auth/me`
   Returns the authenticated user.
 

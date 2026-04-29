@@ -166,12 +166,21 @@ class ForgotPasswordSerializer(serializers.Serializer):
 
 
 class ResetPasswordSerializer(serializers.Serializer):
-    uid = serializers.CharField()
-    token = serializers.CharField()
+    uid = serializers.CharField(required=False, allow_blank=True)
+    token = serializers.CharField(required=False, allow_blank=True)
+    email = serializers.EmailField(required=False)
+    code = serializers.CharField(required=False, allow_blank=True)
     new_password = serializers.CharField(write_only=True, min_length=8)
     confirm_password = serializers.CharField(write_only=True, min_length=8)
 
     def validate(self, attrs):
+        has_token = bool(attrs.get("uid") and attrs.get("token"))
+        has_code = bool(attrs.get("email") and attrs.get("code"))
+        if not has_token and not has_code:
+            raise serializers.ValidationError(
+                "Provide either the reset link details or the email verification code."
+            )
+
         if attrs["new_password"] != attrs["confirm_password"]:
             raise serializers.ValidationError(
                 {"confirm_password": "Passwords do not match."}
